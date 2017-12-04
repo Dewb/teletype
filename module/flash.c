@@ -24,7 +24,14 @@ typedef const struct {
     uint8_t fresh;
 } nvram_data_t;
 
+#ifdef TARGET
 static __attribute__((__section__(".flash_nvram"))) nvram_data_t f;
+#else
+nvram_data_t f;
+#ifdef DECLARE_NVRAM
+DECLARE_NVRAM(&f, sizeof(nvram_data_t))
+#endif
+#endif
 
 void flash_prepare() {
     // if it's not empty return
