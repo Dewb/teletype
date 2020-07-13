@@ -135,7 +135,7 @@ static void assign_msc_event_handlers(void);
 void check_events(void);
 
 // key handling
-static void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key);
+void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key);
 static bool process_global_keys(uint8_t key, uint8_t mod_key, bool is_held_key);
 
 // other
