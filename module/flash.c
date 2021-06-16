@@ -33,6 +33,7 @@ nvram_data_t f;
 #ifdef DECLARE_NVRAM
 DECLARE_NVRAM(&f, sizeof(nvram_data_t))
 #endif
+DECLARE_VRAM(&scene_state, sizeof(scene_state))
 #endif
 
 void flash_prepare()
