@@ -38,7 +38,17 @@ typedef const struct {
 } nvram_data_t;
 
 
+#ifdef TARGET
 static __attribute__((__section__(".flash_nvram"))) nvram_data_t f;
+#else
+nvram_data_t f;
+#ifdef DECLARE_NVRAM
+DECLARE_NVRAM(&f, sizeof(nvram_data_t))
+#endif
+#ifdef DECLARE_VRAM
+DECLARE_VRAM(&scene_state, sizeof(scene_state))
+#endif
+#endif
 
 static void pack_grid(scene_state_t *scene);
 static void unpack_grid(scene_state_t *scene);

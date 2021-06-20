@@ -19,7 +19,7 @@ void process_live_keys(uint8_t key, uint8_t mod_key, bool is_held_key,
                        bool is_release, scene_state_t *ss);
 uint8_t screen_refresh_live(scene_state_t *ss);
 void set_vars_updated(void);
-extern uint8_t grid_mode;
+extern screen_grid_mode grid_mode;
 extern uint8_t grid_page;
 extern uint8_t grid_show_controls;
 
