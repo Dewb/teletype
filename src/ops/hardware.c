@@ -65,6 +65,18 @@ static void op_STATE_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
 static void op_DEVICE_FLIP_get(const void *data, scene_state_t *ss,
                                exec_state_t *es, command_state_t *cs);
+static void op_LIVE_OFF_get(const void *data, scene_state_t *ss,
+                            exec_state_t *es, command_state_t *cs);
+static void op_LIVE_DASH_get(const void *data, scene_state_t *ss,
+                             exec_state_t *es, command_state_t *cs);
+static void op_LIVE_GRID_get(const void *data, scene_state_t *ss,
+                             exec_state_t *es, command_state_t *cs);
+static void op_LIVE_VARS_get(const void *data, scene_state_t *ss,
+                             exec_state_t *es, command_state_t *cs);
+static void op_PRINT_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                         command_state_t *cs);
+static void op_PRINT_set(const void *data, scene_state_t *ss, exec_state_t *es,
+                         command_state_t *cs);
 
 
 // clang-format off
@@ -92,6 +104,16 @@ const tele_op_t op_PARAM_CAL_MIN = MAKE_GET_OP (PARAM.CAL.MIN, op_PARAM_CAL_MIN_
 const tele_op_t op_PARAM_CAL_MAX = MAKE_GET_OP (PARAM.CAL.MAX, op_PARAM_CAL_MAX_set, 0, true);
 const tele_op_t op_PARAM_CAL_RESET  = MAKE_GET_OP (PARAM.CAL.RESET, op_PARAM_CAL_RESET_set, 0, false);
 const tele_op_t op_DEVICE_FLIP   = MAKE_GET_OP (DEVICE.FLIP, op_DEVICE_FLIP_get, 0, false);
+const tele_op_t op_LIVE_OFF      = MAKE_GET_OP (LIVE.OFF, op_LIVE_OFF_get, 0, false);
+const tele_op_t op_LIVE_O        = MAKE_ALIAS_OP (LIVE.O, op_LIVE_OFF_get, NULL, 0, false);
+const tele_op_t op_LIVE_DASH     = MAKE_GET_OP (LIVE.DASH, op_LIVE_DASH_get, 1, false);
+const tele_op_t op_LIVE_D        = MAKE_ALIAS_OP (LIVE.D, op_LIVE_DASH_get, NULL, 1, false);
+const tele_op_t op_LIVE_GRID     = MAKE_GET_OP (LIVE.GRID, op_LIVE_GRID_get, 0, false);
+const tele_op_t op_LIVE_G        = MAKE_ALIAS_OP (LIVE.G, op_LIVE_GRID_get, NULL, 0, false);
+const tele_op_t op_LIVE_VARS     = MAKE_GET_OP (LIVE.VARS, op_LIVE_VARS_get, 0, false);
+const tele_op_t op_LIVE_V        = MAKE_ALIAS_OP (LIVE.V, op_LIVE_VARS_get, NULL, 0, false);
+const tele_op_t op_PRINT         = MAKE_GET_SET_OP (PRINT, op_PRINT_get, op_PRINT_set, 1, true);
+const tele_op_t op_PRT           = MAKE_ALIAS_OP (PRT, op_PRINT_get, op_PRINT_set, 1, true);
 // clang-format on
 
 static void op_CV_get(const void *NOTUSED(data), scene_state_t *ss,
@@ -499,4 +521,41 @@ static void op_DEVICE_FLIP_get(const void *NOTUSED(data),
                                scene_state_t *NOTUSED(ss),
                                exec_state_t *NOTUSED(es), command_state_t *cs) {
     device_flip();
+}
+
+static void op_LIVE_OFF_get(const void *NOTUSED(data),
+                            scene_state_t *NOTUSED(ss),
+                            exec_state_t *NOTUSED(es), command_state_t *cs) {
+    set_live_submode(SUB_MODE_OFF);
+}
+
+static void op_LIVE_DASH_get(const void *NOTUSED(data),
+                             scene_state_t *NOTUSED(ss),
+                             exec_state_t *NOTUSED(es), command_state_t *cs) {
+    select_dash_screen(cs_pop(cs) - 1);
+}
+
+static void op_LIVE_GRID_get(const void *NOTUSED(data),
+                             scene_state_t *NOTUSED(ss),
+                             exec_state_t *NOTUSED(es), command_state_t *cs) {
+    set_live_submode(SUB_MODE_GRID);
+}
+
+static void op_LIVE_VARS_get(const void *NOTUSED(data),
+                             scene_state_t *NOTUSED(ss),
+                             exec_state_t *NOTUSED(es), command_state_t *cs) {
+    set_live_submode(SUB_MODE_VARS);
+}
+
+static void op_PRINT_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t index = cs_pop(cs);
+    cs_push(cs, get_dashboard_value(index - 1));
+}
+
+static void op_PRINT_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t index = cs_pop(cs);
+    int16_t value = cs_pop(cs);
+    print_dashboard_value(index - 1, value);
 }

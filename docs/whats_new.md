@@ -1,5 +1,68 @@
 # Updates
 
+## v4.0.0
+
+- **FIX**: `LAST SCRIPT` in live mode gives time since init script was run
+- **FIX**: negative pattern values are properly read from USB
+- **FIX**: delay when navigating to sections in docs
+- **NEW**: generic i2c ops: `IIA`, `IIS..`, `IIQ..`, `IIB..`
+- **NEW**: exponential delay operator `DEL.G`
+- **NEW**: binary and hex format for numbers: `B...`, `X...`
+- **NEW**: Disting EX ops
+- **FIX**: `LAST n` is broken for script 1
+- **NEW**: bitmasked delay and quantize: `DEL.B..`,  `QT.B..`, `QT.BX..`
+- **NEW**: scale and chord quantize: `QT.S..`, `QT.CS..`
+- **NEW**: bit toggle OP: `BTOG..`
+- **NEW**: volts to semitones helper OP: `VN..`
+- **IMP**: DELAY_SIZE increased to 64 from 16
+- **FIX**: scale degree arguments 1-indexed: `N.S`, `N.CS`
+- **NEW**: Just Friends 4.0 OPs and dual JF OPs
+- **NEW**: binary scale ops `N.B` and `N.BX`
+- **NEW**: reverse binary for numbers: `R...`
+- **NEW**: reverse binary OP: `BREV`
+- **NEW**: `ES.CV` read earthsea CV values
+- **NEW**: added setter for `R`, sets R.MIN and R.MAX to same value, allowing R to be used as variable
+- **NEW**: v/oct to hz/v conversion op: `HZ`
+- **FIX**: W/2.0 ops added
+- **NEW**: W/2.0 ops documentation
+- **NEW**: `><`, `<>`, `>=<` and `<=>` OPs, checks if value is within or outside of range
+- **IMP**: new powerful Q OPs
+- **IMP**: Improved line editing movement (forward/backward by word skips intervening space).
+- **NEW**: Delete to end of word command `alt-d` added.
+- **NEW**: new multi-logic OPs `AND3`, `AND4`, `OR3` and `OR4` with aliases `&&&`, `&&&&`, `|||` and `||||`
+- **NEW**: ops to control live mode: `LIVE.OFF`, `LIVE.VARS`, `LIVE.GRID`, `LIVE.DASH`, `PRINT`
+- **NEW**: `SCENE.P` OP: load another scene but keep current pattern state
+- **NEW**: alias: `EV` for `EVERY`
+- **NEW**: live mode dashboard
+- **NEW**: ops to control live mode: `LIVE.OFF`, `LIVE.VARS`, `LIVE.GRID`, `LIVE.DASH`, `PRINT`
+- **FIX**: `PN.ROT` parameters are swapped
+- **FIX**: better rendering for fine grid faders
+- **FIX**: logical operators should treat all non zero values as `true`, not just positive values
+- **NEW**: crow ops
+- **NEW**: `TI.PRM.CALIB` alias added (was already in the docs)
+- **FIX**: `SCENE` would crash if parameter was out of bounds
+
+## v3.2.0
+
+- **FIX**: improve DAC latency when using `CV` ops
+- **NEW**: call metro / init with `SCRIPT 9` / `SCRIPT 10`
+- **NEW**: forward (C-f or C-s) and reverse (C-r) search in help mode
+- **NEW**: new ops: `LROT` (alias `<<<`), `RROT` (alias `>>>`)
+- **NEW**: `LSH` and `RSH` shift the opposite direction when passed a negative shift amount
+- **NEW**: new op: `SGN` (sign of argument)
+- **NEW**: new kria remote op: `KR.DUR`
+- **NEW**: new op: `NR` (binary math pattern generator)
+- **NEW**: new ops: `N.S, N.C, N.CS` (use western scales and chords to get values from `N` table)
+- **NEW**: new ops: `FADER.SCALE, FADER.CAL.MIN, FADER.CAL.MAX, FADER.CAL.RESET`  for scaling 16n Faderbank values (aliases `FB.S, FB.C.MIN, FB.C.MAX, FB.C.R`)
+- **NEW**: new Tracker mode keybinding `alt-[ ]` semitone up, down
+- **NEW**: new Tracker mode keybinding `ctrl-[ ]` fifth up, down
+- **NEW**: new Tracker mode keybinding `shift-[ ]` octave up, down
+- **NEW**: new Tracker mode keybinding `alt-<0-9>` `<0-9>` semitones up (0=10, 1=11)
+- **NEW**: new Tracker mode keybinding `shift-alt-<0-9>` `<0-9>` semitones down (0=10, 1=11)
+- **FIX**: dim M in edit mode when metro inactive
+- **NEW**: new pattern ops: `P.SHUF`, `PN.SHUF`, `P.REV`, `PN.REV`, `P.ROT`, `PN.ROT`
+- **NEW**: new pattern mods: `P.MAP:`, `PN.MAP x:`
+
 ## Version 3.1
 
 ### New operators

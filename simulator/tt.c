@@ -72,12 +72,36 @@ void tele_vars_updated() {}
 
 void device_flip() {}
 
+void set_live_submode(uint8_t submode) {
+    printf("SET_LIVE_SUBMODE submode:%" PRIu8, submode);
+    printf("\n");
+}
+
+void select_dash_screen(uint8_t screen) {
+    printf("SELECT_DASH_SCREEN screen:%" PRIu8, screen);
+    printf("\n");
+}
+
+void print_dashboard_value(uint8_t index, int16_t value) {
+    printf("PRINT_DASHBOARD_VALUE  index:%" PRIu8 " value:%" PRId16, index,
+           value);
+    printf("\n");
+}
+
+int16_t get_dashboard_value(uint8_t index) {
+    printf("GET_DASHBOARD_VALUE index:%" PRIu8, index);
+    printf("\n");
+    return 0;
+}
+
+void reset_midi_counter() {}
+
 void tele_ii_rx(uint8_t addr, uint8_t *data, uint8_t l) {
     printf("II_rx  addr:%" PRIu8 " l:%" PRIu8, addr, l);
     printf("\n");
 }
 
-void tele_scene(uint8_t i, uint8_t init_grid) {
+void tele_scene(uint8_t i, uint8_t init_grid, uint8_t init_pattern) {
     printf("SCENE  i:%" PRIu8, i);
     printf("\n");
 }

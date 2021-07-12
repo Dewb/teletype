@@ -59,6 +59,8 @@ OPS_SECTIONS = [
     ("seed",          "Seed",          False),
     ("turtle",        "Turtle",        True),
     ("grid",          "Grid",          True),
+    ("midi_in",       "MIDI In",       True),
+    ("i2c",           "Generic I2C",   True),
     ("ansible",       "Ansible",       False),
     ("whitewhale",    "Whitewhale",    False),
     ("meadowphysics", "Meadowphysics", False),
@@ -70,7 +72,13 @@ OPS_SECTIONS = [
     ("fader",         "Fader",         False),
     ("matrixarchate", "Matrixarchate", True),
     ("telex_i",       "TELEXi",        False),
-    ("telex_o",       "TELEXo",        False)
+    ("telex_o",       "TELEXo",        False),
+    ("disting",       "Disting EX",    True),
+    ("wslashdelay",   "W/2.0 delay",   False),
+    ("wslashsynth",   "W/2.0 synth",   False),
+    ("wslashtape",    "W/2.0 tape",    False),
+    ("disting",       "Disting EX",    False),
+    ("crow",          "Crow",          False)
 ]
 
 
@@ -102,7 +110,7 @@ def cheatsheet_tex():
             for op in ops_array:
                 prototype = latex_safe(op["prototype"])
                 if "prototype_set" in op:
-                    prototype += " / " + op["prototype_set"]
+                    prototype += " / " + latex_safe(op["prototype_set"])
                 output += "\\begin{op}"
                 if "aliases" in op and len(op["aliases"]) > 0:
                     output += "[" + latex_safe(" ".join(op["aliases"])) + "]"

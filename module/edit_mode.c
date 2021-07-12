@@ -418,8 +418,7 @@ uint8_t screen_refresh_edit() {
             region_fill(&line[7], 0);
 
         char script_no[2] = { prefix, '\0' };
-        font_string_region_clip(&line[7], script_no, 0, 0,
-                                muted ? 4 : 15, 0);
+        font_string_region_clip(&line[7], script_no, 0, 0, muted ? 4 : 15, 0);
 
         screen_dirty |= (1 << 7);
         dirty &= ~D_INPUT;

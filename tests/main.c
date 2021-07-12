@@ -25,20 +25,25 @@ void tele_has_stack(bool i) {}
 void tele_cv_off(uint8_t i, int16_t v) {}
 void tele_ii_tx(uint8_t addr, uint8_t *data, uint8_t l) {}
 void tele_ii_rx(uint8_t addr, uint8_t *data, uint8_t l) {}
-void tele_scene(uint8_t i, uint8_t init_grid) {}
+void tele_scene(uint8_t i, uint8_t init_grid, uint8_t init_pattern) {}
 void tele_pattern_updated() {}
 void tele_kill() {}
 void tele_mute() {}
 void tele_vars_updated() {}
 void tele_profile_script(size_t s) {}
-void tele_profile_delay(uint8_t d)  {}
+void tele_profile_delay(uint8_t d) {}
 bool tele_get_input_state(uint8_t n) {
     return false;
 }
 void device_flip() {}
-
+void set_live_submode(uint8_t submode) {}
+void select_dash_screen(uint8_t screen) {}
+void print_dashboard_value(uint8_t index, int16_t value) {}
+int16_t get_dashboard_value(uint8_t index) {
+    return 0;
+}
+void reset_midi_counter() {}
 void tele_save_calibration() {}
-
 void grid_key_press(uint8_t x, uint8_t y, uint8_t z) {}
 
 GREATEST_MAIN_DEFS();

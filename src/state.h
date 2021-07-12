@@ -17,7 +17,7 @@
 #define Q_LENGTH 64
 #define TR_COUNT 4
 #define TRIGGER_INPUTS 8
-#define DELAY_SIZE 16
+#define DELAY_SIZE 64
 #define STACK_OP_SIZE 16
 #define PATTERN_COUNT 4
 #define PATTERN_LENGTH 64
@@ -48,8 +48,13 @@
 #define FADER_FH_DOT 6
 #define FADER_FV_DOT 7
 
+#define MAX_MIDI_EVENTS 10
+
 #define METRO_MIN_MS 25
 #define METRO_MIN_UNSUPPORTED_MS 2
+
+#define NB_NBX_SCALES 16
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // SCENE STATE /////////////////////////////////////////////////////////////////
@@ -91,16 +96,19 @@ typedef struct {
     int16_t param;
     int16_t q[Q_LENGTH];
     int16_t q_n;
+    int16_t q_grow;
     int16_t r_min;
     int16_t r_max;
+    int16_t n_scale_bits[NB_NBX_SCALES];
+    int16_t n_scale_root[NB_NBX_SCALES];
     int16_t scene;
     uint8_t script_pol[8];
     int64_t time;
     uint8_t time_act;
     int16_t tr[TR_COUNT];
     int16_t tr_pol[TR_COUNT];
-	int16_t tr_time[TR_COUNT];
-	int16_t seed;
+    int16_t tr_time[TR_COUNT];
+    int16_t seed;
     scale_data_t in_range;
     scale_t in_scale;
     scale_data_t param_range;
@@ -201,6 +209,36 @@ typedef struct {
 } scene_grid_t;
 
 typedef struct {
+    int8_t on_script;
+    int8_t off_script;
+    int8_t cc_script;
+    int8_t clk_script;
+    int8_t start_script;
+    int8_t stop_script;
+    int8_t continue_script;
+
+    uint8_t last_event_type;
+    uint8_t last_channel;
+    uint8_t last_note;
+    uint8_t last_velocity;
+    uint8_t last_controller;
+    uint8_t last_cc;
+
+    uint8_t on_count;
+    uint8_t on_channel[MAX_MIDI_EVENTS];
+    uint8_t note_on[MAX_MIDI_EVENTS];
+    uint8_t note_vel[MAX_MIDI_EVENTS];
+    uint8_t off_count;
+    uint8_t note_off[MAX_MIDI_EVENTS];
+    uint8_t off_channel[MAX_MIDI_EVENTS];
+    uint8_t cc_count;
+    uint8_t cc_channel[MAX_MIDI_EVENTS];
+    uint8_t cn[MAX_MIDI_EVENTS];
+    uint8_t cc[MAX_MIDI_EVENTS];
+    uint8_t clock_div;
+} scene_midi_t;
+
+typedef struct {
     random_state_t rand;
     s16 seed;
 } tele_rand_t;
@@ -230,6 +268,8 @@ typedef struct {
     scene_grid_t grid;
     scene_rand_t rand_states;
     cal_data_t cal;
+    int8_t i2c_op_address;
+    scene_midi_t midi;
 } scene_state_t;
 
 extern void ss_init(scene_state_t *ss);
@@ -239,6 +279,7 @@ extern void ss_pattern_init(scene_state_t *ss, size_t pattern_no);
 extern void ss_grid_init(scene_state_t *ss);
 extern void ss_grid_common_init(grid_common_t *gc);
 extern void ss_rand_init(scene_state_t *ss);
+extern void ss_midi_init(scene_state_t *ss);
 
 extern void ss_set_in(scene_state_t *ss, int16_t value);
 extern void ss_set_param(scene_state_t *ss, int16_t value);
@@ -304,7 +345,8 @@ void ss_turtle_set_val(scene_state_t *, scene_turtle_t *, int16_t);
 
 void ss_set_param_scale(scene_state_t *, int16_t, int16_t);
 void ss_set_in_scale(scene_state_t *, int16_t, int16_t);
-void ss_set_fader_scale(scene_state_t *ss, int16_t fader, int16_t min, int16_t max);
+void ss_set_fader_scale(scene_state_t *ss, int16_t fader, int16_t min,
+                        int16_t max);
 void ss_update_in_scale(scene_state_t *);
 void ss_update_param_scale(scene_state_t *);
 void ss_update_fader_scale(scene_state_t *ss, int16_t fader);
@@ -367,9 +409,7 @@ typedef struct {
     int16_t top;
 } command_state_stack_t;
 
-typedef struct {
-    command_state_stack_t stack;
-} command_state_t;
+typedef struct { command_state_stack_t stack; } command_state_t;
 
 extern void cs_init(command_state_t *cs);
 extern int16_t cs_stack_size(command_state_t *cs);

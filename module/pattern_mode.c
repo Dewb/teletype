@@ -79,15 +79,13 @@ void pattern_down() {
 
 static int16_t transpose_n_value(int16_t value, int8_t interval) {
     uint8_t last_note = 127;
-    if (interval > last_note) {
-        interval = last_note;
-    } else if (interval < -last_note) {
+    if (interval > last_note) { interval = last_note; }
+    else if (interval < -last_note) {
         interval = -last_note;
     }
     if (value > table_n[last_note]) {
         uint8_t idx = last_note;
-        if (interval < 0)
-            idx++;
+        if (interval < 0) idx++;
         return table_n[(idx + interval) % (last_note + 1)];
     }
     int16_t new_value = 0;
@@ -95,10 +93,9 @@ static int16_t transpose_n_value(int16_t value, int8_t interval) {
         if (table_n[i] >= value) {
             int8_t j = i + interval;
             if (table_n[i] > value && interval > 0)
-                j--; // quantize to lower note
-            if (j > last_note) {
-                j = j % last_note + 1;
-            } else if (j < 0) {
+                j--;  // quantize to lower note
+            if (j > last_note) { j = j % last_note + 1; }
+            else if (j < 0) {
                 j = j + last_note + 1;
             }
             new_value = table_n[j];

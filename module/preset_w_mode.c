@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "keyboard_helper.h"
 #include "line_editor.h"
+#include "live_mode.h"
 
 // libavr32
 #include "font.h"
@@ -79,6 +80,7 @@ void process_preset_w_keys(uint8_t k, uint8_t m, bool is_held_key) {
                 edit_line++;
         }
         line_editor_set(&le, scene_text[edit_line + edit_offset]);
+        set_dash_updated();
         dirty |= D_LIST;
         dirty |= D_INPUT;
     }
@@ -87,6 +89,7 @@ void process_preset_w_keys(uint8_t k, uint8_t m, bool is_held_key) {
         for (uint8_t i = SCENE_TEXT_LINES - 1; i > edit_line + edit_offset; i--)
             strcpy(scene_text[i], scene_text[i - 1]);  // overwrites final line!
         strcpy(scene_text[edit_line + edit_offset], line_editor_get(&le));
+        set_dash_updated();
         dirty |= D_LIST;
     }
     // alt-<enter>: save preset
@@ -96,6 +99,7 @@ void process_preset_w_keys(uint8_t k, uint8_t m, bool is_held_key) {
             flash_write(preset_select, &scene_state, &scene_text);
             flash_update_last_saved_scene(preset_select);
             set_last_mode();
+            set_dash_updated();
         }
     }
     else {  // pass to line editor

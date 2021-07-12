@@ -4,6 +4,7 @@
 #include "flash.h"
 #include "globals.h"
 #include "keyboard_helper.h"
+#include "live_mode.h"
 
 // libavr32
 #include "font.h"
@@ -107,10 +108,11 @@ uint8_t screen_refresh_preset_r() {
 
 void do_preset_read() {
     ss_grid_init(&scene_state);
-    flash_read(preset_select, &scene_state, &scene_text, 1);
+    flash_read(preset_select, &scene_state, &scene_text, 1, 1, 1);
     flash_update_last_saved_scene(preset_select);
     ss_set_scene(&scene_state, preset_select);
 
+    set_dash_updated();
     scene_state.initializing = true;
     run_script(&scene_state, INIT_SCRIPT);
     scene_state.initializing = false;

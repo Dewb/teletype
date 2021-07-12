@@ -44,6 +44,8 @@ OPS_SECTIONS = [
     "seed",
     "turtle",
     "grid",
+    "midi_in",
+    "i2c",
     "ansible",
     "whitewhale",
     "meadowphysics",
@@ -56,6 +58,11 @@ OPS_SECTIONS = [
     "fader",
     "wslash",
     "matrixarchate",
+    "disting",
+    "wslashdelay",
+    "wslashsynth",
+    "wslashtape",
+    "crow"
 ]
 
 

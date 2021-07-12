@@ -2,16 +2,16 @@
 #
 #include <ctype.h>   // isdigit
 #include <stdlib.h>  // rand, strtol
-
 #include <stdio.h>
 
 #include "ops/op.h"
 #include "ops/op_enum.h"
+#include "helpers.h"
 
 %%{
     machine match_token; # declare our ragel machine
 
-    number = '-'? digit+;
+    number = (('-')? [0-9]+) | ([X] [0-9A-F]+) | ([B|R] [0-1]+);
 
     main := |*
         # NUMBERS
@@ -136,6 +136,23 @@
         "Q"           => { MATCH_OP(E_OP_Q); };
         "Q.AVG"       => { MATCH_OP(E_OP_Q_AVG); };
         "Q.N"         => { MATCH_OP(E_OP_Q_N); };
+        "Q.CLR"       => { MATCH_OP(E_OP_Q_CLR); };
+        "Q.GRW"       => { MATCH_OP(E_OP_Q_GRW); };
+        "Q.SUM"       => { MATCH_OP(E_OP_Q_SUM); };
+        "Q.MIN"       => { MATCH_OP(E_OP_Q_MIN); };
+        "Q.MAX"       => { MATCH_OP(E_OP_Q_MAX); };
+        "Q.RND"       => { MATCH_OP(E_OP_Q_RND); };
+        "Q.SRT"       => { MATCH_OP(E_OP_Q_SRT); };
+        "Q.REV"       => { MATCH_OP(E_OP_Q_REV); };
+        "Q.SH"        => { MATCH_OP(E_OP_Q_SH); };
+        "Q.ADD"       => { MATCH_OP(E_OP_Q_ADD); };
+        "Q.SUB"       => { MATCH_OP(E_OP_Q_SUB); };
+        "Q.MUL"       => { MATCH_OP(E_OP_Q_MUL); };
+        "Q.DIV"       => { MATCH_OP(E_OP_Q_DIV); };
+        "Q.MOD"       => { MATCH_OP(E_OP_Q_MOD); };
+        "Q.I"         => { MATCH_OP(E_OP_Q_I); };
+        "Q.2P"        => { MATCH_OP(E_OP_Q_2P); };
+        "Q.P2"        => { MATCH_OP(E_OP_Q_P2); };
 
         # hardware
         "CV"          => { MATCH_OP(E_OP_CV); };
@@ -162,6 +179,16 @@
         "MUTE"        => { MATCH_OP(E_OP_MUTE); };
         "STATE"       => { MATCH_OP(E_OP_STATE); };
         "DEVICE.FLIP" => { MATCH_OP(E_OP_DEVICE_FLIP); };
+        "LIVE.OFF"    => { MATCH_OP(E_OP_LIVE_OFF); };
+        "LIVE.O"      => { MATCH_OP(E_OP_LIVE_O); };
+        "LIVE.DASH"   => { MATCH_OP(E_OP_LIVE_DASH); };
+        "LIVE.D"      => { MATCH_OP(E_OP_LIVE_D); };
+        "LIVE.GRID"   => { MATCH_OP(E_OP_LIVE_GRID); };
+        "LIVE.G"      => { MATCH_OP(E_OP_LIVE_G); };
+        "LIVE.VARS"   => { MATCH_OP(E_OP_LIVE_VARS); };
+        "LIVE.V"      => { MATCH_OP(E_OP_LIVE_V); };
+        "PRINT"       => { MATCH_OP(E_OP_PRINT); };
+        "PRT"         => { MATCH_OP(E_OP_PRT); };
 
         # maths
         "ADD"         => { MATCH_OP(E_OP_ADD); };
@@ -183,6 +210,10 @@
         "WRAP"        => { MATCH_OP(E_OP_WRAP); };
         "WRP"         => { MATCH_OP(E_OP_WRP); };
         "QT"          => { MATCH_OP(E_OP_QT); };
+        "QT.S"        => { MATCH_OP(E_OP_QT_S); };
+        "QT.CS"       => { MATCH_OP(E_OP_QT_CS); };
+        "QT.B"        => { MATCH_OP(E_OP_QT_B); };
+        "QT.BX"       => { MATCH_OP(E_OP_QT_BX); };
         "AVG"         => { MATCH_OP(E_OP_AVG); };
         "EQ"          => { MATCH_OP(E_OP_EQ); };
         "NE"          => { MATCH_OP(E_OP_NE); };
@@ -190,7 +221,11 @@
         "GT"          => { MATCH_OP(E_OP_GT); };
         "LTE"         => { MATCH_OP(E_OP_LTE); };
         "GTE"         => { MATCH_OP(E_OP_GTE); };
-        "NZ"          => { MATCH_OP(E_OP_NZ); };
+        "INR"         => { MATCH_OP(E_OP_INR); };
+        "OUTR"        => { MATCH_OP(E_OP_OUTR); };
+        "INRI"        => { MATCH_OP(E_OP_INRI); };
+        "OUTRI"       => { MATCH_OP(E_OP_OUTRI); };
+	"NZ"          => { MATCH_OP(E_OP_NZ); };
         "EZ"          => { MATCH_OP(E_OP_EZ); };
         "RSH"         => { MATCH_OP(E_OP_RSH); };
         "LSH"         => { MATCH_OP(E_OP_LSH); };
@@ -201,13 +236,21 @@
         "SGN"         => { MATCH_OP(E_OP_SGN); };
         "AND"         => { MATCH_OP(E_OP_AND); };
         "OR"          => { MATCH_OP(E_OP_OR); };
+        "AND3"        => { MATCH_OP(E_OP_AND3); };
+        "OR3"         => { MATCH_OP(E_OP_OR3); };
+        "AND4"        => { MATCH_OP(E_OP_AND4); };
+        "OR4"         => { MATCH_OP(E_OP_OR4); };
         "JI"          => { MATCH_OP(E_OP_JI); };
         "SCALE"       => { MATCH_OP(E_OP_SCALE); };
         "SCL"         => { MATCH_OP(E_OP_SCL); };
         "N"           => { MATCH_OP(E_OP_N); };
+        "VN"          => { MATCH_OP(E_OP_VN); };
+        "HZ"          => { MATCH_OP(E_OP_HZ); };
         "N.S"         => { MATCH_OP(E_OP_N_S); };
         "N.C"         => { MATCH_OP(E_OP_N_C); };
         "N.CS"        => { MATCH_OP(E_OP_N_CS); };
+        "N.B"         => { MATCH_OP(E_OP_N_B); };
+        "N.BX"        => { MATCH_OP(E_OP_N_BX); };
         "V"           => { MATCH_OP(E_OP_V); };
         "VV"          => { MATCH_OP(E_OP_VV); };
         "ER"          => { MATCH_OP(E_OP_ER); };
@@ -220,6 +263,8 @@
         "BSET"        => { MATCH_OP(E_OP_BSET);; };
         "BGET"        => { MATCH_OP(E_OP_BGET);; };
         "BCLR"        => { MATCH_OP(E_OP_BCLR);; };
+        "BTOG"        => { MATCH_OP(E_OP_BTOG);; };
+        "BREV"        => { MATCH_OP(E_OP_BREV);; };
         "XOR"         => { MATCH_OP(E_OP_XOR); };
         "CHAOS"       => { MATCH_OP(E_OP_CHAOS); };
         "CHAOS.R"     => { MATCH_OP(E_OP_CHAOS_R); };
@@ -236,13 +281,21 @@
         ">"           => { MATCH_OP(E_OP_SYM_RIGHT_ANGLED); };
         "<="          => { MATCH_OP(E_OP_SYM_LEFT_ANGLED_EQUAL); };
         ">="          => { MATCH_OP(E_OP_SYM_RIGHT_ANGLED_EQUAL); };
-        "!"           => { MATCH_OP(E_OP_SYM_EXCLAMATION); };
+        "><"          => { MATCH_OP(E_OP_SYM_RIGHT_ANGLED_LEFT_ANGLED); };
+        "<>"          => { MATCH_OP(E_OP_SYM_LEFT_ANGLED_RIGHT_ANGLED); };
+        ">=<"         => { MATCH_OP(E_OP_SYM_RIGHT_ANGLED_EQUAL_LEFT_ANGLED); };
+        "<=>"         => { MATCH_OP(E_OP_SYM_LEFT_ANGLED_EQUAL_RIGHT_ANGLED); };
+	"!"           => { MATCH_OP(E_OP_SYM_EXCLAMATION); };
         "<<"          => { MATCH_OP(E_OP_SYM_LEFT_ANGLED_x2); };
         ">>"          => { MATCH_OP(E_OP_SYM_RIGHT_ANGLED_x2); };
         "<<<"         => { MATCH_OP(E_OP_SYM_LEFT_ANGLED_x3); };
         ">>>"         => { MATCH_OP(E_OP_SYM_RIGHT_ANGLED_x3); };
         "&&"          => { MATCH_OP(E_OP_SYM_AMPERSAND_x2); };
         "||"          => { MATCH_OP(E_OP_SYM_PIPE_x2); };
+        "&&&"         => { MATCH_OP(E_OP_SYM_AMPERSAND_x3); };
+        "|||"         => { MATCH_OP(E_OP_SYM_PIPE_x3); };
+        "&&&&"        => { MATCH_OP(E_OP_SYM_AMPERSAND_x4); };
+        "||||"        => { MATCH_OP(E_OP_SYM_PIPE_x4); };
 
         # stack
         "S.ALL"       => { MATCH_OP(E_OP_S_ALL); };
@@ -258,12 +311,37 @@
         "KILL"        => { MATCH_OP(E_OP_KILL); };
         "SCENE"       => { MATCH_OP(E_OP_SCENE); };
         "SCENE.G"     => { MATCH_OP(E_OP_SCENE_G); };
+        "SCENE.P"     => { MATCH_OP(E_OP_SCENE_P); };
         "BREAK"       => { MATCH_OP(E_OP_BREAK); };
         "BRK"         => { MATCH_OP(E_OP_BRK); };
         "SYNC"        => { MATCH_OP(E_OP_SYNC); };
 
         # delay
         "DEL.CLR"     => { MATCH_OP(E_OP_DEL_CLR); };
+
+        # i2c
+        "IIA"         => { MATCH_OP(E_OP_IIA); };
+        "IIS"         => { MATCH_OP(E_OP_IIS); };
+        "IIS1"        => { MATCH_OP(E_OP_IIS1); };
+        "IIS2"        => { MATCH_OP(E_OP_IIS2); };
+        "IIS3"        => { MATCH_OP(E_OP_IIS3); };
+        "IISB1"       => { MATCH_OP(E_OP_IISB1); };
+        "IISB2"       => { MATCH_OP(E_OP_IISB2); };
+        "IISB3"       => { MATCH_OP(E_OP_IISB3); };
+        "IIQ"         => { MATCH_OP(E_OP_IIQ); };
+        "IIQ1"        => { MATCH_OP(E_OP_IIQ1); };
+        "IIQ2"        => { MATCH_OP(E_OP_IIQ2); };
+        "IIQ3"        => { MATCH_OP(E_OP_IIQ3); };
+        "IIQB1"       => { MATCH_OP(E_OP_IIQB1); };
+        "IIQB2"       => { MATCH_OP(E_OP_IIQB2); };
+        "IIQB3"       => { MATCH_OP(E_OP_IIQB3); };
+        "IIB"         => { MATCH_OP(E_OP_IIB); };
+        "IIB1"        => { MATCH_OP(E_OP_IIB1); };
+        "IIB2"        => { MATCH_OP(E_OP_IIB2); };
+        "IIB3"        => { MATCH_OP(E_OP_IIB3); };
+        "IIBB1"       => { MATCH_OP(E_OP_IIBB1); };
+        "IIBB2"       => { MATCH_OP(E_OP_IIBB2); };
+        "IIBB3"       => { MATCH_OP(E_OP_IIBB3); };
 
         # whitewhale
         "WW.PRESET"   => { MATCH_OP(E_OP_WW_PRESET); };
@@ -296,6 +374,7 @@
         "ES.STOP"     => { MATCH_OP(E_OP_ES_STOP); };
         "ES.TRIPLE"   => { MATCH_OP(E_OP_ES_TRIPLE); };
         "ES.MAGIC"    => { MATCH_OP(E_OP_ES_MAGIC); };
+        "ES.CV"       => { MATCH_OP(E_OP_ES_CV); };
 
         # orca
         "OR.TRK"      => { MATCH_OP(E_OP_OR_TRK); };
@@ -371,18 +450,49 @@
         "ARP.ER"      => { MATCH_OP(E_OP_ARP_ER); };
 
         # justfriends
-        "JF.TR"       => { MATCH_OP(E_OP_JF_TR); };
-        "JF.RMODE"    => { MATCH_OP(E_OP_JF_RMODE); };
-        "JF.RUN"      => { MATCH_OP(E_OP_JF_RUN); };
-        "JF.SHIFT"    => { MATCH_OP(E_OP_JF_SHIFT); };
-        "JF.VTR"      => { MATCH_OP(E_OP_JF_VTR); };
-        "JF.MODE"     => { MATCH_OP(E_OP_JF_MODE); };
-        "JF.TICK"     => { MATCH_OP(E_OP_JF_TICK); };
-        "JF.VOX"      => { MATCH_OP(E_OP_JF_VOX); };
-        "JF.NOTE"     => { MATCH_OP(E_OP_JF_NOTE); };
-        "JF.GOD"      => { MATCH_OP(E_OP_JF_GOD); };
-        "JF.TUNE"     => { MATCH_OP(E_OP_JF_TUNE); };
-        "JF.QT"       => { MATCH_OP(E_OP_JF_QT); };
+        "JF.TR"         => { MATCH_OP(E_OP_JF_TR); };
+        "JF.RMODE"      => { MATCH_OP(E_OP_JF_RMODE); };
+        "JF.RUN"        => { MATCH_OP(E_OP_JF_RUN); };
+        "JF.SHIFT"      => { MATCH_OP(E_OP_JF_SHIFT); };
+        "JF.VTR"        => { MATCH_OP(E_OP_JF_VTR); };
+        "JF.MODE"       => { MATCH_OP(E_OP_JF_MODE); };
+        "JF.TICK"       => { MATCH_OP(E_OP_JF_TICK); };
+        "JF.VOX"        => { MATCH_OP(E_OP_JF_VOX); };
+        "JF.NOTE"       => { MATCH_OP(E_OP_JF_NOTE); };
+        "JF.GOD"        => { MATCH_OP(E_OP_JF_GOD); };
+        "JF.TUNE"       => { MATCH_OP(E_OP_JF_TUNE); };
+        "JF.QT"         => { MATCH_OP(E_OP_JF_QT); };
+		"JF.PITCH"      => { MATCH_OP(E_OP_JF_PITCH); };
+        "JF.ADDR"       => { MATCH_OP(E_OP_JF_ADDR); };
+        "JF.SPEED"      => { MATCH_OP(E_OP_JF_SPEED); };
+        "JF.TSC"        => { MATCH_OP(E_OP_JF_TSC); };
+        "JF.RAMP"       => { MATCH_OP(E_OP_JF_RAMP); };
+        "JF.CURVE"      => { MATCH_OP(E_OP_JF_CURVE); };
+        "JF.FM"         => { MATCH_OP(E_OP_JF_FM); };
+        "JF.TIME"       => { MATCH_OP(E_OP_JF_TIME); };
+        "JF.INTONE"     => { MATCH_OP(E_OP_JF_INTONE); };
+        "JF.POLY"       => { MATCH_OP(E_OP_JF_POLY); };
+        "JF.POLY.RESET" => { MATCH_OP(E_OP_JF_POLY_RESET); };
+        "JF.SEL"        => { MATCH_OP(E_OP_JF_SEL); };
+
+        # crow
+        "CROW.SEL"      => { MATCH_OP(E_OP_CROW_SEL); };
+        "CROW.V"        => { MATCH_OP(E_OP_CROW_V); };
+        "CROW.SLEW"     => { MATCH_OP(E_OP_CROW_SLEW); };
+        "CROW.C1"       => { MATCH_OP(E_OP_CROW_C1); };
+        "CROW.C2"       => { MATCH_OP(E_OP_CROW_C2); };
+        "CROW.C3"       => { MATCH_OP(E_OP_CROW_C3); };
+        "CROW.C4"       => { MATCH_OP(E_OP_CROW_C4); };
+        "CROW.RST"      => { MATCH_OP(E_OP_CROW_RST); };
+        "CROW.PULSE"    => { MATCH_OP(E_OP_CROW_PULSE); };
+        "CROW.AR"       => { MATCH_OP(E_OP_CROW_AR); };
+        "CROW.LFO"      => { MATCH_OP(E_OP_CROW_LFO); };
+        "CROW.IN"       => { MATCH_OP(E_OP_CROW_IN); };
+        "CROW.OUT"      => { MATCH_OP(E_OP_CROW_OUT); };
+        "CROW.Q0"       => { MATCH_OP(E_OP_CROW_Q0); };
+        "CROW.Q1"       => { MATCH_OP(E_OP_CROW_Q1); };
+        "CROW.Q2"       => { MATCH_OP(E_OP_CROW_Q2); };
+        "CROW.Q3"       => { MATCH_OP(E_OP_CROW_Q3); };
 
         # telex
         "TO.TR"            => { MATCH_OP(E_OP_TO_TR); };
@@ -504,6 +614,7 @@
         "TI.PRM.N"         => { MATCH_OP(E_OP_TI_PRM_N); };
         "TI.PRM.SCALE"     => { MATCH_OP(E_OP_TI_PRM_SCALE); };
         "TI.PRM.MAP"       => { MATCH_OP(E_OP_TI_PRM_MAP); };
+        "TI.PRM.CALIB"     => { MATCH_OP(E_OP_TI_PRM_CALIB); };
         "TI.PRM.INIT"      => { MATCH_OP(E_OP_TI_PRM_INIT); };
 
         # fader
@@ -610,7 +721,122 @@
         "WS.CUE"      => { MATCH_OP(E_OP_WS_CUE); };
         "WS.LOOP"     => { MATCH_OP(E_OP_WS_LOOP); };
 
-                # seed
+        # disting ex
+        "EX"          => { MATCH_OP(E_OP_EX); };
+        "EX.PRESET"   => { MATCH_OP(E_OP_EX_PRESET); };
+        "EX.PRE"      => { MATCH_OP(E_OP_EX_PRE); };
+        "EX.SAVE"     => { MATCH_OP(E_OP_EX_SAVE); };
+        "EX.RESET"    => { MATCH_OP(E_OP_EX_RESET); };
+        "EX.ALG"      => { MATCH_OP(E_OP_EX_ALG); };
+        "EX.A"        => { MATCH_OP(E_OP_EX_A); };
+        "EX.CTRL"     => { MATCH_OP(E_OP_EX_CTRL); };
+        "EX.C"        => { MATCH_OP(E_OP_EX_C); };
+        "EX.PARAM"    => { MATCH_OP(E_OP_EX_PARAM); };
+        "EX.P"        => { MATCH_OP(E_OP_EX_P); };
+        "EX.PV"       => { MATCH_OP(E_OP_EX_PV); };
+        "EX.MIN"      => { MATCH_OP(E_OP_EX_MIN); };
+        "EX.MAX"      => { MATCH_OP(E_OP_EX_MAX); };
+        "EX.REC"      => { MATCH_OP(E_OP_EX_REC); };
+        "EX.PLAY"     => { MATCH_OP(E_OP_EX_PLAY); };
+        "EX.AL.P"     => { MATCH_OP(E_OP_EX_AL_P); };
+        "EX.AL.CLK"   => { MATCH_OP(E_OP_EX_AL_CLK); };
+        "EX.M.CH"     => { MATCH_OP(E_OP_EX_M_CH); };
+        "EX.M.N"      => { MATCH_OP(E_OP_EX_M_N); };
+        "EX.M.NO"     => { MATCH_OP(E_OP_EX_M_NO); };
+        "EX.M.PB"     => { MATCH_OP(E_OP_EX_M_PB); };
+        "EX.M.CC"     => { MATCH_OP(E_OP_EX_M_CC); };
+        "EX.M.PRG"    => { MATCH_OP(E_OP_EX_M_PRG); };
+        "EX.M.CLK"    => { MATCH_OP(E_OP_EX_M_CLK); };
+        "EX.M.START"  => { MATCH_OP(E_OP_EX_M_START); };
+        "EX.M.STOP"   => { MATCH_OP(E_OP_EX_M_STOP); };
+        "EX.M.CONT"   => { MATCH_OP(E_OP_EX_M_CONT); };
+        "EX.SB.CH"    => { MATCH_OP(E_OP_EX_SB_CH); };
+        "EX.SB.N"     => { MATCH_OP(E_OP_EX_SB_N); };
+        "EX.SB.NO"    => { MATCH_OP(E_OP_EX_SB_NO); };
+        "EX.SB.PB"    => { MATCH_OP(E_OP_EX_SB_PB); };
+        "EX.SB.CC"    => { MATCH_OP(E_OP_EX_SB_CC); };
+        "EX.SB.PRG"   => { MATCH_OP(E_OP_EX_SB_PRG); };
+        "EX.SB.CLK"   => { MATCH_OP(E_OP_EX_SB_CLK); };
+        "EX.SB.START" => { MATCH_OP(E_OP_EX_SB_START); };
+        "EX.SB.STOP"  => { MATCH_OP(E_OP_EX_SB_STOP); };
+        "EX.SB.CONT"  => { MATCH_OP(E_OP_EX_SB_CONT); };
+        "EX.VOX.P"    => { MATCH_OP(E_OP_EX_VOX_P); };
+        "EX.VP"       => { MATCH_OP(E_OP_EX_VP); };
+        "EX.VOX"      => { MATCH_OP(E_OP_EX_VOX); };
+        "EX.V"        => { MATCH_OP(E_OP_EX_V); };
+        "EX.VOX.O"    => { MATCH_OP(E_OP_EX_VOX_O); };
+        "EX.VO"       => { MATCH_OP(E_OP_EX_VO); };
+        "EX.NOTE"     => { MATCH_OP(E_OP_EX_NOTE); };
+        "EX.N"        => { MATCH_OP(E_OP_EX_N); };
+        "EX.NOTE.O"   => { MATCH_OP(E_OP_EX_NOTE_O); };
+        "EX.NO"       => { MATCH_OP(E_OP_EX_NO); };
+        "EX.ALLOFF"   => { MATCH_OP(E_OP_EX_ALLOFF); };
+        "EX.AO"       => { MATCH_OP(E_OP_EX_AO); };
+        "EX.T"        => { MATCH_OP(E_OP_EX_T); };
+        "EX.TV"       => { MATCH_OP(E_OP_EX_TV); };
+        "EX.LP.REC"   => { MATCH_OP(E_OP_EX_LP_REC); };
+        "EX.LP.PLAY"  => { MATCH_OP(E_OP_EX_LP_PLAY); };
+        "EX.LP.REV"   => { MATCH_OP(E_OP_EX_LP_REV); };
+        "EX.LP.DOWN"  => { MATCH_OP(E_OP_EX_LP_DOWN); };
+        "EX.LP.CLR"   => { MATCH_OP(E_OP_EX_LP_CLR); };
+        "EX.LP"       => { MATCH_OP(E_OP_EX_LP); };
+        "EX.LP.DOWN?" => { MATCH_OP(E_OP_EX_LP_DOWNQ); };
+        "EX.LP.REV?"  => { MATCH_OP(E_OP_EX_LP_REVQ); };
+
+        # w/s
+        "W/S.PITCH"    => { MATCH_OP(E_OP_WS_S_PITCH); };
+        "W/S.VEL"      => { MATCH_OP(E_OP_WS_S_VEL); };
+        "W/S.VOX"      => { MATCH_OP(E_OP_WS_S_VOX); };
+        "W/S.NOTE"     => { MATCH_OP(E_OP_WS_S_NOTE); };
+        "W/S.AR.MODE"  => { MATCH_OP(E_OP_WS_S_AR_MODE); };
+        "W/S.LPG.TIME" => { MATCH_OP(E_OP_WS_S_LPG_TIME); };
+        "W/S.LPG.SYM"  => { MATCH_OP(E_OP_WS_S_LPG_SYMMETRY); };
+        "W/S.CURVE"    => { MATCH_OP(E_OP_WS_S_CURVE); };
+        "W/S.RAMP"     => { MATCH_OP(E_OP_WS_S_RAMP); };
+        "W/S.FM.INDEX" => { MATCH_OP(E_OP_WS_S_FM_INDEX); };
+        "W/S.FM.RATIO" => { MATCH_OP(E_OP_WS_S_FM_RATIO); };
+        "W/S.FM.ENV"   => { MATCH_OP(E_OP_WS_S_FM_ENV); };
+        "W/S.PATCH"    => { MATCH_OP(E_OP_WS_S_PATCH); };
+        "W/S.VOICES"   => { MATCH_OP(E_OP_WS_S_VOICES); };
+
+        # w/d
+        "W/D.FBK"       => { MATCH_OP(E_OP_WS_D_FEEDBACK); };
+        "W/D.MIX"       => { MATCH_OP(E_OP_WS_D_MIX ); };
+        "W/D.FILT"      => { MATCH_OP(E_OP_WS_D_LOWPASS); };
+        "W/D.FREEZE"    => { MATCH_OP(E_OP_WS_D_FREEZE ); };
+        "W/D.TIME"      => { MATCH_OP(E_OP_WS_D_TIME); };
+        "W/D.LEN"       => { MATCH_OP(E_OP_WS_D_LENGTH); };
+        "W/D.POS"       => { MATCH_OP(E_OP_WS_D_POSITION); };
+        "W/D.CUT"       => { MATCH_OP(E_OP_WS_D_CUT); };
+        "W/D.FREQ.RNG"  => { MATCH_OP(E_OP_WS_D_FREQ_RANGE); };
+        "W/D.RATE"      => { MATCH_OP(E_OP_WS_D_RATE); };
+        "W/D.FREQ"      => { MATCH_OP(E_OP_WS_D_FREQ); };
+        "W/D.CLK"       => { MATCH_OP(E_OP_WS_D_CLK); };
+        "W/D.CLK.RATIO" => { MATCH_OP(E_OP_WS_D_CLK_RATIO); };
+        "W/D.PLUCK"     => { MATCH_OP(E_OP_WS_D_PLUCK); };
+        "W/D.MOD.RATE"  => { MATCH_OP(E_OP_WS_D_MOD_RATE); };
+        "W/D.MOD.AMT"   => { MATCH_OP(E_OP_WS_D_MOD_AMOUNT); };
+
+        # w/t
+        "W/T.REC"         => { MATCH_OP(E_OP_WS_T_RECORD  ); };
+        "W/T.PLAY"        => { MATCH_OP(E_OP_WS_T_PLAY  ); };
+        "W/T.REV"         => { MATCH_OP(E_OP_WS_T_REV); };
+        "W/T.SPEED"       => { MATCH_OP(E_OP_WS_T_SPEED  ); };
+        "W/T.FREQ"        => { MATCH_OP(E_OP_WS_T_FREQ  ); };
+        "W/T.ERASE.LVL"   => { MATCH_OP(E_OP_WS_T_PRE_LEVEL ); };
+        "W/T.MONITOR.LVL" => { MATCH_OP(E_OP_WS_T_MONITOR_LEVEL ); };
+        "W/T.REC.LVL"     => { MATCH_OP(E_OP_WS_T_REC_LEVEL ); };
+        "W/T.ECHOMODE"    => { MATCH_OP(E_OP_WS_T_HEAD_ORDER ); };
+        "W/T.LOOP.START"  => { MATCH_OP(E_OP_WS_T_LOOP_START); };
+        "W/T.LOOP.END"    => { MATCH_OP(E_OP_WS_T_LOOP_END ); };
+        "W/T.LOOP.ACTIVE" => { MATCH_OP(E_OP_WS_T_LOOP_ACTIVE ); };
+        "W/T.LOOP.SCALE"  => { MATCH_OP(E_OP_WS_T_LOOP_SCALE ); };
+        "W/T.LOOP.NEXT"   => { MATCH_OP(E_OP_WS_T_LOOP_NEXT ); };
+        "W/T.TIME"        => { MATCH_OP(E_OP_WS_T_TIMESTAMP  ); };
+        "W/T.SEEK"        => { MATCH_OP(E_OP_WS_T_SEEK ); };
+        "W/T.CLEARTAPE"   => { MATCH_OP(E_OP_WS_T_CLEARTAPE ); };
+
+        # seed
         "SEED"        => { MATCH_OP(E_OP_SEED); };
         "RAND.SEED"      => { MATCH_OP(E_OP_RAND_SEED); };
         "RAND.SD"      => { MATCH_OP(E_OP_SYM_RAND_SD); };
@@ -624,6 +850,35 @@
         "P.SEED"      => { MATCH_OP(E_OP_P_SEED); };
         "P.SD"          => { MATCH_OP(E_OP_SYM_P_SD); };
 
+        # MIDI
+        "MI.$"        => { MATCH_OP(E_OP_MI_SYM_DOLLAR); };
+        "MI.LE"       => { MATCH_OP(E_OP_MI_LE); };
+        "MI.LN"       => { MATCH_OP(E_OP_MI_LN); };
+        "MI.LNV"      => { MATCH_OP(E_OP_MI_LNV); };
+        "MI.LV"       => { MATCH_OP(E_OP_MI_LV); };
+        "MI.LVV"      => { MATCH_OP(E_OP_MI_LVV); };
+        "MI.LO"       => { MATCH_OP(E_OP_MI_LO); };
+        "MI.LC"       => { MATCH_OP(E_OP_MI_LC); };
+        "MI.LCC"      => { MATCH_OP(E_OP_MI_LCC); };
+        "MI.LCCV"     => { MATCH_OP(E_OP_MI_LCCV); };
+        "MI.NL"       => { MATCH_OP(E_OP_MI_NL); };
+        "MI.N"        => { MATCH_OP(E_OP_MI_N); };
+        "MI.NV"       => { MATCH_OP(E_OP_MI_NV); };
+        "MI.V"        => { MATCH_OP(E_OP_MI_V); };
+        "MI.VV"       => { MATCH_OP(E_OP_MI_VV); };
+        "MI.OL"       => { MATCH_OP(E_OP_MI_OL); };
+        "MI.O"        => { MATCH_OP(E_OP_MI_O); };
+        "MI.CL"       => { MATCH_OP(E_OP_MI_CL); };
+        "MI.C"        => { MATCH_OP(E_OP_MI_C); };
+        "MI.CC"       => { MATCH_OP(E_OP_MI_CC); };
+        "MI.CCV"      => { MATCH_OP(E_OP_MI_CCV); };
+        "MI.LCH"      => { MATCH_OP(E_OP_MI_LCH); };
+        "MI.NCH"      => { MATCH_OP(E_OP_MI_NCH); };
+        "MI.OCH"      => { MATCH_OP(E_OP_MI_OCH); };
+        "MI.CCH"      => { MATCH_OP(E_OP_MI_CCH); };
+        "MI.CLKD"     => { MATCH_OP(E_OP_MI_CLKD); };
+        "MI.CLKR"     => { MATCH_OP(E_OP_MI_CLKR); };
+
         # MODS
         # controlflow
         "IF"          => { MATCH_MOD(E_MOD_IF); };
@@ -632,14 +887,33 @@
         "L"           => { MATCH_MOD(E_MOD_L); };
         "W"           => { MATCH_MOD(E_MOD_W); };
         "EVERY"       => { MATCH_MOD(E_MOD_EVERY); };
+        "EV"          => { MATCH_MOD(E_MOD_EV); };
         "SKIP"        => { MATCH_MOD(E_MOD_SKIP); };
         "OTHER"       => { MATCH_MOD(E_MOD_OTHER); };
+        "EX1"         => { MATCH_MOD(E_MOD_EX1); };
+        "EX2"         => { MATCH_MOD(E_MOD_EX2); };
+        "EX3"         => { MATCH_MOD(E_MOD_EX3); };
+        "EX4"         => { MATCH_MOD(E_MOD_EX4); };
 
         # delay
         "PROB"        => { MATCH_MOD(E_MOD_PROB); };
         "DEL"         => { MATCH_MOD(E_MOD_DEL); };
         "DEL.X"       => { MATCH_MOD(E_MOD_DEL_X); };
         "DEL.R"       => { MATCH_MOD(E_MOD_DEL_R); };
+        "DEL.G"       => { MATCH_MOD(E_MOD_DEL_G); };
+        "DEL.B"       => { MATCH_MOD(E_MOD_DEL_B); };
+
+		# justfriends
+        "JF0"         => { MATCH_MOD(E_MOD_JF0); };
+        "JF1"         => { MATCH_MOD(E_MOD_JF1); };
+        "JF2"         => { MATCH_MOD(E_MOD_JF2); };
+
+        # crow
+        "CROWN"       => { MATCH_MOD(E_MOD_CROWN); };
+        "CROW1"       => { MATCH_MOD(E_MOD_CROW1); };
+        "CROW2"       => { MATCH_MOD(E_MOD_CROW2); };
+        "CROW3"       => { MATCH_MOD(E_MOD_CROW3); };
+        "CROW4"       => { MATCH_MOD(E_MOD_CROW4); };
 
         # matrixarchate
         "MA.SELECT"   => { MATCH_OP(E_OP_MA_SELECT); };
@@ -673,14 +947,38 @@
 // these are our macros that are inserted into the code when Ragel finds a match
 #define MATCH_OP(op) { out->tag = OP; out->value = op; no_of_tokens++; }
 #define MATCH_MOD(mod) { out->tag = MOD; out->value = mod; no_of_tokens++; }
-#define MATCH_NUMBER()                           \
-    {                                            \
-        out->tag = NUMBER;                       \
-        int32_t val = strtol(token, NULL, 0);    \
-        val = val > INT16_MAX ? INT16_MAX : val; \
-        val = val < INT16_MIN ? INT16_MIN : val; \
-        out->value = val;                        \
-        no_of_tokens++;                          \
+#define MATCH_NUMBER()                                   \
+    {                                                    \
+        out->tag = NUMBER;                               \
+        uint8_t base = 0;                                \
+        uint8_t binhex = 0;                              \
+        uint8_t bitrev = 0;                              \
+        if (token[0] == 'X') {                           \
+            out->tag = XNUMBER;                          \
+            binhex = 1;                                  \
+            base = 16;                                   \
+            token++;                                     \
+        }                                                \
+        else if (token[0] == 'B') {                      \
+            out->tag = BNUMBER;                          \
+            binhex = 1;                                  \
+            base = 2;                                    \
+            token++;                                     \
+        }                                                \
+        else if (token[0] == 'R') {                      \
+            out->tag = RNUMBER;                          \
+            binhex = 1;                                  \
+            bitrev = 1;                                  \
+            base = 2;                                    \
+            token++;                                     \
+        }                                                \
+        int32_t val = strtol(token, NULL, base);         \
+        if (binhex) val = (int16_t)((uint16_t)val);      \
+        if (bitrev) val = rev_bitstring_to_int(token);         \
+        val = val > INT16_MAX ? INT16_MAX : val;         \
+        val = val < INT16_MIN ? INT16_MIN : val;         \
+        out->value = val;                                \
+        no_of_tokens++;                                  \
     }
 
 // matches a single token, out contains the token, return value indicates
@@ -696,6 +994,7 @@ bool match_token(const char *token, const size_t len, tele_data_t *out) {
     const char* pe = token + len; // pointer to end of data
     const char* eof = pe;         // pointer to eof
     (void)match_token_en_main;    // fix unused variable warning
+    (void)ts;                     // fix unused variable warning
 
     int no_of_tokens = 0;
 

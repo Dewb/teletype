@@ -149,7 +149,7 @@ prototype = "MUTE x"
 prototype_set = "MUTE x y"
 short = "Disable trigger input x"
 description = """
-Mute the trigger input on `x` (0-7) when `y` is non-zero.
+Mute the trigger input on `x` (1-8) when `y` is non-zero.
 """
 
 ["STATE"]
@@ -165,4 +165,61 @@ short = "Flip the screen/inputs/outputs"
 description = """
 Flip the screen, the inputs and the outputs. This op is useful if you want to mount your Teletype upside down.
 The new state will be saved to flash. 
+"""
+
+["LIVE.OFF"]
+prototype = "LIVE.OFF"
+aliases = ["LIVE.O"]
+short = "Show the default live mode screen"
+
+["LIVE.VARS"]
+prototype = "LIVE.VARS"
+aliases = ["LIVE.V"]
+short = "Show variables in live mode"
+
+["LIVE.GRID"]
+prototype = "LIVE.GRID"
+aliases = ["LIVE.G"]
+short = "Show grid visualizer in live mode"
+
+["LIVE.DASH"]
+prototype = "LIVE.DASH x"
+aliases = ["LIVE.D"]
+short = "Show the dashboard with index `x`"
+description = """
+This allows you to show custom text and print values on the live mode screen.
+To create a dashboard, simply edit the scene description. You can define 
+multiple dashboards by separating them with `===`, and you can select them
+by specifying the dashboard number as the op parameter. 
+
+You can also print up to 16 values using `PRINT` op. To create a placeholder
+for a value, place `%##` where you want the number to be, where `##` is
+a value index between 1 and 16. Please note: if you define multiple placeholders
+for the same value, only the last one will be used, and the rest will be 
+treated as plain text. By default, values are printed in decimal format,
+but you can also use hex, binary and reversed binary formats by using `%X##`,
+`%B##` and `%R##` placeholders respectively.
+
+An example of a dashboard:
+
+```
+THIS IS A DASHBOARD
+
+CURRENT METRO RATE IS: %1
+```
+
+You can use this dashboard by entering the above in a scene description,
+placing `LIVE.DASH 1` in the init script and placing `PRINT 1 M` in the metro script.
+"""
+
+["PRINT"]
+prototype = "PRINT x"
+prototype_set = "PRINT x y"
+aliases = ["PRT"]
+short = "Print a value on a live mode dashboard or get the printed value"
+description = """
+This op allows you to display up to 16 values on a live mode dashboard and
+should be used in conjunction with `LIVE.DASH` op. See `LIVE.DASH`
+description for information on how to use it. You can also use this op
+to store up to 16 additional values.
 """

@@ -1,7 +1,7 @@
 #include "command.h"
 
 #include <string.h>  // memcpy
-
+#include "helpers.h"
 #include "ops/op.h"
 #include "util.h"
 
@@ -28,6 +28,24 @@ void print_command(const tele_command_t *cmd, char *out) {
             case NUMBER: {
                 char number[8];
                 itoa(value, number, 10);
+                strcat(out, number);
+                break;
+            }
+            case XNUMBER: {
+                char number[6];
+                itoa_hex(value, number);
+                strcat(out, number);
+                break;
+            }
+            case BNUMBER: {
+                char number[18];
+                itoa_bin(value, number);
+                strcat(out, number);
+                break;
+            }
+            case RNUMBER: {
+                char number[18];
+                itoa_rbin(value, number);
                 strcat(out, number);
                 break;
             }

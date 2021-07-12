@@ -94,6 +94,7 @@ A will be 256.
 
 [EVERY]
 prototype = "EVERY x: ..."
+aliases = ["EV"]
 short = "run the command every `x` times the command is called"
 description = """
 Runs the command every `x` times the line is executed.  This is tracked on a per-line basis, so each script can have 6 different "dividers".
@@ -198,6 +199,15 @@ prototype = "SCENE.G x"
 short = "load scene `x` (0-31) without loading grid control states"
 description = """
 Load scene `x` (0-31) without loading grid button and fader states.
+
+**WARNING**: You will lose any unsaved changes to your scene.
+"""
+
+["SCENE.P"]
+prototype = "SCENE.P x"
+short = "load scene `x` (0-31) without loading pattern state"
+description = """
+Load scene `x` (0-31) without loading pattern data.
 
 **WARNING**: You will lose any unsaved changes to your scene.
 """

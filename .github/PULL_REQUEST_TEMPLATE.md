@@ -9,6 +9,8 @@
 #### If the related Github issues aren't referenced in your commits, please link to them here.
 
 #### I have,
-* [ ] updated `CHANGELOG.md`
+* [ ] updated `CHANGELOG.md` and `whats_new.md`
 * [ ] updated the documentation
+* [ ] updated `help_mode.c` (if applicable)
 * [ ] run `make format` on each commit
+* [ ] run tests

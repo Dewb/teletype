@@ -1,4 +1,5 @@
 #include "state.h"
+#include "helpers.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -13,8 +14,13 @@ void ss_init(scene_state_t *ss) {
     ss_patterns_init(ss);
     ss_grid_init(ss);
     ss_rand_init(ss);
+    ss_midi_init(ss);
     ss->delay.count = 0;
     for (size_t i = 0; i < TR_COUNT; i++) { ss->tr_pulse_timer[i] = 0; }
+    for (size_t i = 0; i < NB_NBX_SCALES; i++) {
+        ss->variables.n_scale_bits[i] = bit_reverse(0b101011010101, 12);
+        ss->variables.n_scale_root[i] = 0;
+    }
     ss->stack_op.top = 0;
     memset(&ss->scripts, 0, ss_scripts_size());
     turtle_init(&ss->turtle);
@@ -22,6 +28,7 @@ void ss_init(scene_state_t *ss) {
     for (size_t i = 0; i < TEMP_SCRIPT; i++) ss->scripts[i].last_time = ticks;
     ss->variables.time = 0;
     ss->variables.time_act = 1;
+    ss->i2c_op_address = -1;
 }
 
 void ss_variables_init(scene_state_t *ss) {
@@ -42,6 +49,7 @@ void ss_variables_init(scene_state_t *ss) {
         .o_max = 63,
         .o_wrap = 1,
         .q_n = 1,
+        .q_grow = 0,
         .r_min = 0,
         .r_max = 16383,
         .script_pol = { 1, 1, 1, 1, 1, 1, 1, 1 },
@@ -50,24 +58,25 @@ void ss_variables_init(scene_state_t *ss) {
         .tr_time = { 100, 100, 100, 100 },
         .in_range = { 0, 16383 },
         .param_range = { 0, 16383 },
-        .fader_ranges = {
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-            { 0, 16383 },
-        },
+        .fader_ranges =
+            {
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+                { 0, 16383 },
+            },
     };
 
     memcpy(&ss->variables, &default_variables, sizeof(default_variables));
@@ -154,6 +163,40 @@ void ss_rand_init(scene_state_t *ss) {
         r->seed = rand();
         random_seed(&r->rand, r->seed);
     }
+}
+
+// MIDI
+
+void ss_midi_init(scene_state_t *ss) {
+    ss->midi.on_script = -1;
+    ss->midi.off_script = -1;
+    ss->midi.cc_script = -1;
+    ss->midi.clk_script = -1;
+    ss->midi.start_script = -1;
+    ss->midi.stop_script = -1;
+    ss->midi.continue_script = -1;
+
+    ss->midi.last_event_type = 0;
+    ss->midi.last_channel = 0;
+    ss->midi.last_note = 0;
+    ss->midi.last_velocity = 0;
+    ss->midi.last_controller = 0;
+    ss->midi.last_cc = 0;
+
+    ss->midi.on_count = 0;
+    ss->midi.off_count = 0;
+    ss->midi.cc_count = 0;
+    for (u8 i = 0; i < MAX_MIDI_EVENTS; i++) {
+        ss->midi.note_on[i] = 0;
+        ss->midi.note_vel[i] = 0;
+        ss->midi.note_off[i] = 0;
+        ss->midi.cn[i] = 0;
+        ss->midi.cc[i] = 0;
+        ss->midi.on_channel[i] = 0;
+        ss->midi.off_channel[i] = 0;
+        ss->midi.cc_channel[i] = 0;
+    }
+    ss->midi.clock_div = 24;
 }
 
 // Hardware
@@ -445,9 +488,10 @@ void ss_update_param_scale(scene_state_t *ss) {
 }
 
 void ss_update_fader_scale(scene_state_t *ss, int16_t fader) {
-    ss->variables.fader_scales[fader] = scale_init(ss->cal.f_min[fader], ss->cal.f_max[fader],
-                                           ss->variables.fader_ranges[fader].out_min,
-                                           ss->variables.fader_ranges[fader].out_max);
+    ss->variables.fader_scales[fader] =
+        scale_init(ss->cal.f_min[fader], ss->cal.f_max[fader],
+                   ss->variables.fader_ranges[fader].out_min,
+                   ss->variables.fader_ranges[fader].out_max);
 }
 
 void ss_update_fader_scale_all(scene_state_t *ss) {
@@ -474,7 +518,8 @@ void ss_set_in_scale(scene_state_t *ss, int16_t min, int16_t max) {
     ss_update_in_scale(ss);
 }
 
-void ss_set_fader_scale(scene_state_t *ss, int16_t fader, int16_t min, int16_t max) {
+void ss_set_fader_scale(scene_state_t *ss, int16_t fader, int16_t min,
+                        int16_t max) {
     ss->variables.fader_ranges[fader].out_min = min;
     ss->variables.fader_ranges[fader].out_max = max;
     ss_update_fader_scale(ss, fader);

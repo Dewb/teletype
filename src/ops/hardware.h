@@ -27,5 +27,15 @@ extern const tele_op_t op_CV_SET;
 extern const tele_op_t op_MUTE;
 extern const tele_op_t op_STATE;
 extern const tele_op_t op_DEVICE_FLIP;
+extern const tele_op_t op_LIVE_OFF;
+extern const tele_op_t op_LIVE_O;
+extern const tele_op_t op_LIVE_DASH;
+extern const tele_op_t op_LIVE_D;
+extern const tele_op_t op_LIVE_GRID;
+extern const tele_op_t op_LIVE_G;
+extern const tele_op_t op_LIVE_VARS;
+extern const tele_op_t op_LIVE_V;
+extern const tele_op_t op_PRINT;
+extern const tele_op_t op_PRT;
 
 #endif

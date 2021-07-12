@@ -12,15 +12,18 @@ tests: main.o \
 	../src/ops/op.o ../src/ops/ansible.o ../src/ops/controlflow.o \
 	../src/ops/delay.o ../src/ops/earthsea.o \
 	../src/ops/er301.o ../src/ops/fader.o \
-	../src/ops/hardware.o \
+	../src/ops/hardware.o ../src/ops/i2c.o ../src/ops/midi.o \
 	../src/ops/justfriends.o ../src/ops/meadowphysics.o \
 	../src/ops/metronome.o ../src/ops/maths.o ../src/ops/orca.o \
 	../src/ops/patterns.o ../src/ops/queue.o ../src/ops/stack.o \
 	../src/ops/telex.o ../src/ops/variables.o  ../src/ops/whitewhale.o \
 	../src/ops/turtle.o ../src/ops/init.o ../src/ops/grid_ops.o \
 	../src/ops/matrixarchate.o ../src/ops/wslash.o ../src/ops/seed.o \
+        ../src/ops/disting.o \
+	../src/ops/wslashtape.o ../src/ops/wslashsynth.o ../src/ops/wslashdelay.o \
+	../src/ops/crow.o \
 	../libavr32/src/euclidean/data.o ../libavr32/src/euclidean/euclidean.o \
-	../libavr32/src/util.o ../libavr32/src/random.o
+	../libavr32/src/music.o ../libavr32/src/util.o ../libavr32/src/random.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
 ../src/match_token.c: ../src/match_token.rl
