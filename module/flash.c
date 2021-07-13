@@ -21,14 +21,14 @@ typedef struct {
 static grid_data_t grid_data;
 
 // NVRAM data structure located in the flash array.
-typedef const struct {
+typedef struct {
     scene_script_t scripts[SCRIPT_COUNT - 1];  // Exclude TEMP script
     scene_pattern_t patterns[PATTERN_COUNT];
     grid_data_t grid_data;
     char text[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
 } nvram_scene_t;
 
-typedef const struct {
+typedef struct {
     nvram_scene_t scenes[SCENE_SLOTS];
     uint8_t last_scene;
     tele_mode_t last_mode;
