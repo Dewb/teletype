@@ -88,9 +88,11 @@ error_t validate(const tele_command_t *c,
         else if (word_type == MOD) {
             error_t mod_error = E_OK;
 
-            if (idx != 0)
-                mod_error = E_NO_MOD_HERE;
-            else if (c->separator == -1)
+            // if ((idx != 0) && (idx != (c->separator + 1))) {
+            //     printf("idx: %d, csep: %d", idx, c->separator);
+            //     mod_error = E_NO_MOD_HERE;
+            // }
+            if (c->separators[0] == -1)
                 mod_error = E_NEED_PRE_SEP;
             else if (stack_depth < tele_mods[word_value]->params)
                 mod_error = E_NEED_PARAMS;
@@ -106,11 +108,11 @@ error_t validate(const tele_command_t *c,
         }
         else if (word_type == PRE_SEP) {
             sep_count++;
-            if (sep_count > 1) return E_MANY_PRE_SEP;
+            if (sep_count > COMMAND_MAX_PRES) return E_MANY_PRE_SEP;
 
-            if (idx == 0) return E_PLACE_PRE_SEP;
+            //if (idx == 0) return E_PLACE_PRE_SEP;
 
-            if (c->data[0].tag != MOD) return E_PLACE_PRE_SEP;
+            //if (c->data[c->separators[sep_count-1] - 1].tag != MOD) return E_PLACE_PRE_SEP;
 
             if (stack_depth > 1) return E_EXTRA_PARAMS;
 
@@ -213,7 +215,7 @@ process_result_t process_command(scene_state_t *ss, exec_state_t *es,
     // if we do then only process the PRE part, the MOD will determine if the
     // POST should be run and take care of running it
     ssize_t start_idx = 0;
-    ssize_t end_idx = c->separator == -1 ? c->length : c->separator;
+    ssize_t end_idx = c->separators[0] == -1 ? c->length : c->separators[0];
 
     // 2. Determine the location of all the SUB commands
     // -------------------------------------------------

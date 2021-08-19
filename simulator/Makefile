@@ -1,5 +1,5 @@
 .PHONY: clean
-CFLAGS=-std=c99 -g -Wall -fno-common -DSIM -I. -I../src -I../libavr32/src
+CFLAGS=-std=c99 -g -Wall -fno-common -DSIM -I. -I../src -I../libavr32/src -DDEBUG
 DEPS =
 OBJ = tt.o ../src/teletype.o ../src/command.o ../src/helpers.o \
 	../src/every.o ../src/match_token.o ../src/scanner.o \

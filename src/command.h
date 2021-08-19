@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #define COMMAND_MAX_LENGTH 16
+#define COMMAND_MAX_PRES 2
 
 typedef enum {
     NUMBER,
@@ -24,7 +25,7 @@ typedef struct {
 
 typedef struct {
     uint8_t length;
-    int8_t separator;
+    int8_t separators[COMMAND_MAX_PRES];
     tele_data_t data[COMMAND_MAX_LENGTH];
     bool comment;
 } tele_command_t;

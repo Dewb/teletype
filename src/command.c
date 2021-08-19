@@ -11,9 +11,14 @@ void copy_command(tele_command_t *dst, const tele_command_t *src) {
 }
 
 void copy_post_command(tele_command_t *dst, const tele_command_t *src) {
-    dst->length = src->length - src->separator - 1;
-    dst->separator = -1;
-    memcpy(dst->data, &src->data[src->separator + 1],
+    dst->length = src->length - src->separators[0] - 1;
+    
+    for (int i = 0; i < COMMAND_MAX_PRES-1; i++) {
+        dst->separators[i] = (src->separators[i+1] == -1) ? -1 : src->separators[i+1] - src->separators[0] - 1;
+    }
+    dst->separators[COMMAND_MAX_PRES-1] = -1;
+
+    memcpy(dst->data, &src->data[src->separators[0] + 1],
            dst->length * sizeof(tele_data_t));
 }
 

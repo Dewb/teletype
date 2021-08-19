@@ -34,8 +34,10 @@ error_t scanner(const char *data, tele_command_t *out,
     // reset outputs
     error_msg[0] = 0;
     out->length = 0;
-    out->separator = -1;
-
+    for (int i = 0; i < COMMAND_MAX_PRES; i++) {
+        out->separators[i] = -1;
+    }
+    
     %%{
         separator = [ \n\t];
         pre_separator = ': ';
@@ -76,13 +78,18 @@ error_t scanner(const char *data, tele_command_t *out,
         }
 
         action pre_separator {
-            // ';' pre separator matched
+            // ':' pre separator matched
 
-            // it's a PRE_SEP, we need to record it's position
-            // (validate checks for too many PRE_SEP tokens)
             out->data[out->length].tag = PRE_SEP;
             out->data[out->length].value = 0;
-            out->separator = out->length;
+
+            // record the position of the PRE_SEPs
+            for (int i = 0; i < COMMAND_MAX_PRES; i++) {
+                if (out->separators[i] == -1) {
+                    out->separators[i] = out->length;
+                    break;
+                }
+            }
 
             // increase the command length
             out->length++;
@@ -92,7 +99,7 @@ error_t scanner(const char *data, tele_command_t *out,
         }
 
         action sub_separator {
-            // ':' mod separator matched
+            // ';' sub separator matched
             out->data[out->length].tag = SUB_SEP;
             out->data[out->length].value = 0;
 
