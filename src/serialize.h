@@ -25,8 +25,8 @@ typedef struct {
     void* data;
 } tt_deserializer_t;
 
-void serialize_scene(tt_serializer_t* stream, uint8_t scene_num, scene_state_t* scene, char (*text)[32][32]);
-void deserialize_scene(tt_deserializer_t* stream, uint8_t scene_num, scene_state_t* scene, char (*text)[32][32]);
+void serialize_scene(tt_serializer_t* stream, scene_state_t* scene, char (*text)[32][32]);
+void deserialize_scene(tt_deserializer_t* stream, scene_state_t* scene, char (*text)[32][32]);
 
 void serialize_grid(tt_serializer_t* stream, scene_state_t* scene);
 void deserialize_grid(tt_deserializer_t* stream, scene_state_t* scene, char c);

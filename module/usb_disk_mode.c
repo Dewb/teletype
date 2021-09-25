@@ -121,7 +121,7 @@ void tele_usb_disk() {
                 continue;
             }
 
-            serialize_scene(&tele_usb_writer, i, &scene, &text);
+            serialize_scene(&tele_usb_writer, &scene, &text);
 
             file_close();
             lun_state |= (1 << lun);  // LUN test is done.
@@ -164,7 +164,7 @@ void tele_usb_disk() {
                 if (!file_open(FOPEN_MODE_R))
                     print_dbg("\r\ncan't open");
                 else {
-                    deserialize_scene(&tele_usb_reader, i, &scene, &text);
+                    deserialize_scene(&tele_usb_reader, &scene, &text);
                     file_close();
 
                     flash_write(i, &scene, &text);

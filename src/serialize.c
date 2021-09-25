@@ -16,7 +16,7 @@ bool check_deserializer(tt_deserializer_t* stream)
     return (stream && stream->read_char && stream->eof && stream->print_dbg);
 }
 
-void serialize_scene(tt_serializer_t* stream, uint8_t scene_num, scene_state_t* scene, char (*text)[32][32])
+void serialize_scene(tt_serializer_t* stream, scene_state_t* scene, char (*text)[32][32])
 {
     if (!check_serializer(stream))
     {
@@ -125,7 +125,7 @@ void serialize_scene(tt_serializer_t* stream, uint8_t scene_num, scene_state_t* 
     serialize_grid(stream, scene);
 }
 
-void deserialize_scene(tt_deserializer_t* stream, uint8_t scene_num, scene_state_t* scene, char (*text)[32][32])
+void deserialize_scene(tt_deserializer_t* stream, scene_state_t* scene, char (*text)[32][32])
 {
     if (!check_deserializer(stream))
     {
