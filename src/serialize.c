@@ -1,3 +1,4 @@
+#include "teletype.h"
 #include "serialize.h"
 #include "util.h"
 
@@ -16,7 +17,7 @@ bool check_deserializer(tt_deserializer_t* stream)
     return (stream && stream->read_char && stream->eof && stream->print_dbg);
 }
 
-void serialize_scene(tt_serializer_t* stream, scene_state_t* scene, char (*text)[32][32])
+void serialize_scene(tt_serializer_t* stream, scene_state_t* scene, char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS])
 {
     if (!check_serializer(stream))
     {
@@ -125,7 +126,7 @@ void serialize_scene(tt_serializer_t* stream, scene_state_t* scene, char (*text)
     serialize_grid(stream, scene);
 }
 
-void deserialize_scene(tt_deserializer_t* stream, scene_state_t* scene, char (*text)[32][32])
+void deserialize_scene(tt_deserializer_t* stream, scene_state_t* scene, char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS])
 {
     if (!check_deserializer(stream))
     {
