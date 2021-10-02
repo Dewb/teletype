@@ -10,6 +10,7 @@
 #include "parser_tests.h"
 #include "process_tests.h"
 #include "turtle_tests.h"
+#include "serialize_scene_tests.h"
 
 uint32_t tele_get_ticks() {
     return 0;
@@ -56,6 +57,7 @@ int main(int argc, char **argv) {
     RUN_SUITE(parser_suite);
     RUN_SUITE(process_suite);
     RUN_SUITE(turtle_suite);
+    RUN_SUITE(serialize_scene_suite);
 
     GREATEST_MAIN_END();
 }
