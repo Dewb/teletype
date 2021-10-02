@@ -71,7 +71,7 @@ bool test_string_eof(void* user_data)
 tt_serializer_t test_file_writer, test_string_writer;
 tt_deserializer_t test_file_reader, test_string_reader;
 
-void init_streams()
+void init_serializers()
 {
     test_file_writer.write_buffer = &test_file_write_buffer;
     test_file_writer.write_char = &test_file_write_char;
@@ -128,7 +128,7 @@ int compare_files(char* filename, FILE* a, FILE* b) {
     return 0;
 }
 
-TEST test_round_trip_preset(char* filename, char* tempfile) 
+TEST test_round_trip_file(char* filename, char* tempfile) 
 {
     scene_state_t scene;
     ss_init(&scene);
@@ -156,7 +156,7 @@ TEST test_round_trip_preset(char* filename, char* tempfile)
     PASS();
 }
 
-TEST test_basic_deserialize_script()
+TEST test_deserialize_fragment_script_basic()
 {
     scene_state_t scene;
     ss_init(&scene);
@@ -185,16 +185,16 @@ TEST test_basic_deserialize_script()
 
 SUITE(serialize_scene_suite) {
     log_init();
-    init_streams();
-    RUN_TESTp(test_round_trip_preset, "../presets/tt00.txt", "./results/tt00.txt");
-    RUN_TESTp(test_round_trip_preset, "../presets/tt01.txt", "./results/tt01.txt");
-    RUN_TESTp(test_round_trip_preset, "../presets/tt02.txt", "./results/tt02.txt");
-    RUN_TESTp(test_round_trip_preset, "../presets/tt03.txt", "./results/tt03.txt");
-    RUN_TESTp(test_round_trip_preset, "../presets/tt04.txt", "./results/tt04.txt");
-    RUN_TESTp(test_round_trip_preset, "../presets/tt05.txt", "./results/tt05.txt");
-    RUN_TESTp(test_round_trip_preset, "../presets/tt06.txt", "./results/tt06.txt");
-    RUN_TESTp(test_round_trip_preset, "../presets/tt07.txt", "./results/tt07.txt");
-    RUN_TESTp(test_round_trip_preset, "../presets/tt08.txt", "./results/tt08.txt");
-    RUN_TEST(test_basic_deserialize_script);
+    init_serializers();
+    RUN_TESTp(test_round_trip_file, "../presets/tt00.txt", "./test_output/tt00.txt");
+    RUN_TESTp(test_round_trip_file, "../presets/tt01.txt", "./test_output/tt01.txt");
+    RUN_TESTp(test_round_trip_file, "../presets/tt02.txt", "./test_output/tt02.txt");
+    RUN_TESTp(test_round_trip_file, "../presets/tt03.txt", "./test_output/tt03.txt");
+    RUN_TESTp(test_round_trip_file, "../presets/tt04.txt", "./test_output/tt04.txt");
+    RUN_TESTp(test_round_trip_file, "../presets/tt05.txt", "./test_output/tt05.txt");
+    RUN_TESTp(test_round_trip_file, "../presets/tt06.txt", "./test_output/tt06.txt");
+    RUN_TESTp(test_round_trip_file, "../presets/tt07.txt", "./test_output/tt07.txt");
+    RUN_TESTp(test_round_trip_file, "../presets/tt08.txt", "./test_output/tt08.txt");
+    RUN_TEST(test_deserialize_fragment_script_basic);
     log_print();
 }
