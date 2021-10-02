@@ -18,6 +18,8 @@ typedef struct {
     SCALE_T f_max[16];
 } cal_data_t;
 
+extern cal_data_t blank_cal_data;
+
 typedef struct {
     SCALE_T out_min;
     SCALE_T out_max;

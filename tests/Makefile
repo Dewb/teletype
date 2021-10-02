@@ -9,6 +9,7 @@ tests: main.o \
 	../src/teletype.o ../src/command.o ../src/helpers.o \
 	../src/every.o ../src/match_token.o ../src/scanner.o \
 	../src/state.o ../src/table.o ../src/turtle.o ../src/chaos.o \
+	../src/scale.o \
 	../src/ops/op.o ../src/ops/ansible.o ../src/ops/controlflow.o \
 	../src/ops/delay.o ../src/ops/earthsea.o \
 	../src/ops/er301.o ../src/ops/fader.o \
