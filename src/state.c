@@ -8,8 +8,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // SCENE STATE /////////////////////////////////////////////////////////////////
 
-void ss_init(scene_state_t *ss) {
+void ss_init(scene_state_t* ss)
+{
     ss->initializing = true;
+    ss->cal = blank_cal_data;
     ss_variables_init(ss);
     ss_patterns_init(ss);
     ss_grid_init(ss);
