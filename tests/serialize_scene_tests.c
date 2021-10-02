@@ -191,10 +191,9 @@ SUITE(serialize_scene_suite) {
     RUN_TESTp(test_round_trip_preset, "../presets/tt02.txt", "./results/tt02.txt");
     RUN_TESTp(test_round_trip_preset, "../presets/tt03.txt", "./results/tt03.txt");
     RUN_TESTp(test_round_trip_preset, "../presets/tt04.txt", "./results/tt04.txt");
-    // no ii ops loaded in this binary
-    // RUN_TESTp(test_round_trip_preset, "../presets/tt05.txt", "./results/tt05.txt");
-    // RUN_TESTp(test_round_trip_preset, "../presets/tt06.txt", "./results/tt06.txt");
-    // RUN_TESTp(test_round_trip_preset, "../presets/tt07.txt", "./results/tt07.txt");
+    RUN_TESTp(test_round_trip_preset, "../presets/tt05.txt", "./results/tt05.txt");
+    RUN_TESTp(test_round_trip_preset, "../presets/tt06.txt", "./results/tt06.txt");
+    RUN_TESTp(test_round_trip_preset, "../presets/tt07.txt", "./results/tt07.txt");
     RUN_TESTp(test_round_trip_preset, "../presets/tt08.txt", "./results/tt08.txt");
     RUN_TEST(test_basic_deserialize_script);
     log_print();
