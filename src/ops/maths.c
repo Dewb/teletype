@@ -435,7 +435,7 @@ static int16_t quantize_to_bitmask_scale(int16_t scale_bits, int16_t transpose,
 
 static void op_ADD_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                        exec_state_t *NOTUSED(es), command_state_t *cs) {
-    cs_push(cs, cs_pop(cs) + cs_pop(cs));
+    cs_push(cs, cs_pop(cs) - cs_pop(cs));
 }
 
 static void op_SUB_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
