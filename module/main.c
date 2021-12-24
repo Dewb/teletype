@@ -111,8 +111,8 @@ typedef struct {
     uint16_t step;
     int32_t delta;
     uint32_t a;
-    float cal_offset;
-    float cal_scale;
+    double cal_offset;
+    double cal_scale;
 } aout_t;
 
 static u8 ignore_front_press = 0;
@@ -1021,9 +1021,9 @@ void tele_tr(uint8_t i, int16_t v) {
 }
 
 void tele_cv(uint8_t i, int16_t v, uint8_t s) {
+    int16_t vo = v + aout[i].off;
     // apply calibration scaling
-    int16_t scaled_v = (int16_t) (((float) v * aout[i].cal_scale) + aout[i].cal_offset);
-    int16_t t = scaled_v + aout[i].off;
+    int16_t t = (int16_t) (((double) vo * aout[i].cal_scale) + aout[i].cal_offset);
     if (t < 0)
         t = 0;
     else if (t > 16383)
@@ -1214,14 +1214,14 @@ int main(void) {
 
     // init CV calibration
     // TODO: refactor me
-    aout[0].cal_scale = 0.996033;
-    aout[0].cal_offset = 0.498016;
-    aout[1].cal_scale = 0.998779;
-    aout[1].cal_offset = 6.999390;
-    aout[2].cal_scale = 0.998474;
-    aout[2].cal_offset = 4.499237;
-    aout[3].cal_scale = 0.996338;
-    aout[3].cal_offset = 5.998169;
+    aout[0].cal_scale = 1.00363480;
+    aout[0].cal_offset = 10.15076082;
+    aout[1].cal_scale = 1.00313147;
+    aout[1].cal_offset = -33.26443915;
+    aout[2].cal_scale = 1.00212633;
+    aout[2].cal_offset = -7.05213909;
+    aout[3].cal_scale = 1.00615903;
+    aout[3].cal_offset = -3.77353933;
 
     init_live_mode();
     set_mode(M_LIVE);
