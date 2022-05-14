@@ -8,24 +8,24 @@
 #include "teletype.h"
 #include "state.h"
 #include "serializer.h"
-#include "serialize.h"
-#include "ops\op_enum.h"
+#include "scene_serialization.h"
+#include "ops/op_enum.h"
 
-void test_file_write_buffer(void* user_data, uint8_t* buffer, uint16_t size) {
-    fwrite(buffer, 1, size, (FILE*)user_data);
+void test_file_write_buffer(void* self_data, uint8_t* buffer, uint16_t size) {
+    fwrite(buffer, 1, size, (FILE*)self_data);
 }
-void test_file_write_char(void* user_data, uint8_t c) {
-    fputc(c, (FILE*)user_data);
+void test_file_write_char(void* self_data, uint8_t c) {
+    fputc(c, (FILE*)self_data);
 }
 void test_print_dbg(const char* c) {
     printf("%s\n", c);
 }
 
-uint16_t test_file_read_char(void* user_data) {
-    return (uint16_t)fgetc((FILE*)user_data);
+uint16_t test_file_read_char(void* self_data) {
+    return (uint16_t)fgetc((FILE*)self_data);
 }
-bool test_file_eof(void* user_data) {
-    return feof((FILE*)user_data) != 0;
+bool test_file_eof(void* self_data) {
+    return feof((FILE*)self_data) != 0;
 }
 
 typedef struct {
@@ -34,23 +34,23 @@ typedef struct {
     unsigned int position;
 } stringsource;
 
-void test_string_write_buffer(void* user_data, uint8_t* buffer, uint16_t size)
+void test_string_write_buffer(void* self_data, uint8_t* buffer, uint16_t size)
 {
-    stringsource* ss = (stringsource*)user_data;
+    stringsource* ss = (stringsource*)self_data;
     strncpy(ss->buffer + ss->position, (char*)buffer, size);
     ss->position += size;
     ss->length += size;
 }
-void test_string_write_char(void* user_data, uint8_t c)
+void test_string_write_char(void* self_data, uint8_t c)
 {
-    stringsource* ss = (stringsource*)user_data;
+    stringsource* ss = (stringsource*)self_data;
     ss->buffer[ss->position] = c;
     ss->position += 1;
     ss->length += 1;
 }
-uint16_t test_string_read_char(void* user_data)
+uint16_t test_string_read_char(void* self_data)
 {
-    stringsource* ss = (stringsource*)user_data;
+    stringsource* ss = (stringsource*)self_data;
     if (ss->position < ss->length)
     {
         char r = ss->buffer[ss->position];
@@ -62,9 +62,9 @@ uint16_t test_string_read_char(void* user_data)
         return -1;
     }
 }
-bool test_string_eof(void* user_data)
+bool test_string_eof(void* self_data)
 {
-    stringsource* ss = (stringsource*)user_data;
+    stringsource* ss = (stringsource*)self_data;
     return (ss->position >= ss->length);
 }
 
@@ -128,7 +128,7 @@ int compare_files(char* filename, FILE* a, FILE* b) {
     return 0;
 }
 
-TEST test_round_trip_file(char* filename, char* tempfile) 
+TEST test_round_trip_file(char* filename, char* tempfile)
 {
     scene_state_t scene;
     ss_init(&scene);

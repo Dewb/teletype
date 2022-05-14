@@ -1,11 +1,19 @@
 #include "teletype.h"
-#include "serialize.h"
+#include "scene_serialization.h"
 #include "util.h"
 
 uint8_t grid_state = 0;
 uint16_t grid_count = 0;
 uint8_t grid_num = 0;
 char fvalue[36];
+
+// internal test functions to make sure serializer struct is filled out
+bool check_serializer(tt_serializer_t* stream);
+bool check_deserializer(tt_deserializer_t* stream);
+
+// internal helper functions for grid data serialization
+void serialize_grid(tt_serializer_t* stream, scene_state_t* scene);
+void deserialize_grid(tt_deserializer_t* stream, scene_state_t* scene, char c);
 
 bool check_serializer(tt_serializer_t* stream)
 {

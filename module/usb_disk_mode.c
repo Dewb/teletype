@@ -6,7 +6,7 @@
 
 #include "flash.h"
 #include "globals.h"
-#include "serialize.h"
+#include "scene_serialization.h"
 
 // libavr32
 #include "font.h"
@@ -24,30 +24,45 @@
 #include "uhi_msc_mem.h"
 #include "usb_protocol_msc.h"
 
-void tele_usb_putc(void* user_data, uint8_t* c)
+void tele_usb_putc(void* self_data, uint8_t c);
+void tele_usb_write_buf(void* self_data, uint8_t* buffer, uint16_t size);
+uint16_t tele_usb_getc(void* self_data);
+bool tele_usb_eof(void* self_data);
+
+void tele_usb_putc(void* self_data, uint8_t c)
 {
     file_putc(c);
 }
 
-void tele_usb_write_buf(void* user_data, uint8_t* buffer, uint16_t size)
+void tele_usb_write_buf(void* self_data, uint8_t* buffer, uint16_t size)
 {
     file_write_buf(buffer, size);
 }
 
-uint16_t tele_usb_getc(void* user_data)
+uint16_t tele_usb_getc(void* self_data)
 {
     return file_getc();
 }
 
-bool tele_usb_eof(void* user_data)
+bool tele_usb_eof(void* self_data)
 {
     return file_eof();
 }
 
-scene_serializer_t tele_usb_writer { .write_char = &tele_usb_putc, .write_buffer = &tele_usb_write_buf, .print_dbg = &print_dbg };
-scene_deserializer_t tele_usb_reader { .read_char = &tele_usb_getc, .eof = &tele_usb_eof, .print_dbg = &print_dbg };
-
 void tele_usb_disk() {
+
+    tt_serializer_t tele_usb_writer;
+    tele_usb_writer.write_char = &tele_usb_putc;
+    tele_usb_writer.write_buffer = &tele_usb_write_buf;
+    tele_usb_writer.print_dbg = &print_dbg;
+    tele_usb_writer.data = NULL; // asf disk i/o holds state, no handles needed
+
+    tt_deserializer_t tele_usb_reader;
+    tele_usb_reader.read_char = &tele_usb_getc;
+    tele_usb_reader.eof = &tele_usb_eof;
+    tele_usb_reader.print_dbg = &print_dbg;
+    tele_usb_reader.data = NULL; // asf disk i/o holds state, no handles needed
+
     char input_buffer[32];
     print_dbg("\r\nusb");
 

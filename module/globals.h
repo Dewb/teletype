@@ -6,9 +6,7 @@
 #include "line_editor.h"
 #include "region.h"
 #include "teletype.h"
-
-#define SCENE_TEXT_LINES 32
-#define SCENE_TEXT_CHARS LINE_EDITOR_SIZE
+#include "scene_serialization_constants.h"
 
 // global variables (defined in main.c)
 
