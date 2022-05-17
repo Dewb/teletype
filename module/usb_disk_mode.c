@@ -24,6 +24,7 @@
 #include "uhi_msc_mem.h"
 #include "usb_protocol_msc.h"
 
+// Local functions for usb filesystem serialization
 void tele_usb_putc(void* self_data, uint8_t c);
 void tele_usb_write_buf(void* self_data, uint8_t* buffer, uint16_t size);
 uint16_t tele_usb_getc(void* self_data);
@@ -46,24 +47,13 @@ uint16_t tele_usb_getc(void* self_data)
 
 bool tele_usb_eof(void* self_data)
 {
-    return file_eof();
+    return file_eof() != 0;
 }
 
+// usb disk mode entry point
 void tele_usb_disk() {
 
-    tt_serializer_t tele_usb_writer;
-    tele_usb_writer.write_char = &tele_usb_putc;
-    tele_usb_writer.write_buffer = &tele_usb_write_buf;
-    tele_usb_writer.print_dbg = &print_dbg;
-    tele_usb_writer.data = NULL; // asf disk i/o holds state, no handles needed
-
-    tt_deserializer_t tele_usb_reader;
-    tele_usb_reader.read_char = &tele_usb_getc;
-    tele_usb_reader.eof = &tele_usb_eof;
-    tele_usb_reader.print_dbg = &print_dbg;
-    tele_usb_reader.data = NULL; // asf disk i/o holds state, no handles needed
-
-    char input_buffer[32];
+    char text_buffer[40];
     print_dbg("\r\nusb");
 
     uint8_t lun_state = 0;
@@ -93,9 +83,9 @@ void tele_usb_disk() {
         strcpy(filename, "tt00s.txt");
 
         print_dbg("\r\nwriting scenes");
-        strcpy(input_buffer, "WRITE");
+        strcpy(text_buffer, "WRITE");
         region_fill(&line[0], 0);
-        font_string_region_clip_tab(&line[0], input_buffer, 2, 0, 0xa, 0);
+        font_string_region_clip_tab(&line[0], text_buffer, 2, 0, 0xa, 0);
         region_draw(&line[0]);
 
         for (int i = 0; i < SCENE_SLOTS; i++) {
@@ -105,9 +95,9 @@ void tele_usb_disk() {
             char text[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
             memset(text, 0, SCENE_TEXT_LINES * SCENE_TEXT_CHARS);
 
-            strcat(input_buffer, ".");
+            strcat(text_buffer, "."); // strcat is dangerous, make sure the buffer is large enough!
             region_fill(&line[0], 0);
-            font_string_region_clip_tab(&line[0], input_buffer, 2, 0, 0xa, 0);
+            font_string_region_clip_tab(&line[0], text_buffer, 2, 0, 0xa, 0);
             region_draw(&line[0]);
 
             flash_read(i, &scene, &text, 1, 1, 1);
@@ -136,6 +126,11 @@ void tele_usb_disk() {
                 continue;
             }
 
+            tt_serializer_t tele_usb_writer;
+            tele_usb_writer.write_char = &tele_usb_putc;
+            tele_usb_writer.write_buffer = &tele_usb_write_buf;
+            tele_usb_writer.print_dbg = &print_dbg;
+            tele_usb_writer.data = NULL; // asf disk i/o holds state, no handles needed
             serialize_scene(&tele_usb_writer, &scene, &text);
 
             file_close();
@@ -158,9 +153,9 @@ void tele_usb_disk() {
         strcpy(filename, "tt00.txt");
         print_dbg("\r\nreading scenes...");
 
-        strcpy(input_buffer, "READ");
+        strcpy(text_buffer, "READ");
         region_fill(&line[1], 0);
-        font_string_region_clip_tab(&line[1], input_buffer, 2, 0, 0xa, 0);
+        font_string_region_clip_tab(&line[1], text_buffer, 2, 0, 0xa, 0);
         region_draw(&line[1]);
 
         for (int i = 0; i < SCENE_SLOTS; i++) {
@@ -169,9 +164,9 @@ void tele_usb_disk() {
             char text[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
             memset(text, 0, SCENE_TEXT_LINES * SCENE_TEXT_CHARS);
 
-            strcat(input_buffer, ".");
+            strcat(text_buffer, "."); // strcat is dangerous, make sure the buffer is large enough!
             region_fill(&line[1], 0);
-            font_string_region_clip_tab(&line[1], input_buffer, 2, 0, 0xa, 0);
+            font_string_region_clip_tab(&line[1], text_buffer, 2, 0, 0xa, 0);
             region_draw(&line[1]);
             if (nav_filelist_findname(filename, 0)) {
                 print_dbg("\r\nfound: ");
@@ -179,9 +174,15 @@ void tele_usb_disk() {
                 if (!file_open(FOPEN_MODE_R))
                     print_dbg("\r\ncan't open");
                 else {
-                    deserialize_scene(&tele_usb_reader, &scene, &text);
-                    file_close();
 
+                    tt_deserializer_t tele_usb_reader;
+                    tele_usb_reader.read_char = &tele_usb_getc;
+                    tele_usb_reader.eof = &tele_usb_eof;
+                    tele_usb_reader.print_dbg = &print_dbg;
+                    tele_usb_reader.data = NULL; // asf disk i/o holds state, no handles needed
+                    deserialize_scene(&tele_usb_reader, &scene, &text);
+
+                    file_close();
                     flash_write(i, &scene, &text);
                 }
             }
