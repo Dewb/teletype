@@ -14,9 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: jidicula/clang-format-action@v4.11.0
+    - uses: RafikFarhad/clang-format-github-action@v2.1.0
+      name: Run clang-format 12
       with:
-        clang-format-version: '12'
+        sources: "**/*.c, **/*.h"
+        style: file
   run-tests:
     runs-on: ubuntu-latest
     steps:
