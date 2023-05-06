@@ -17,7 +17,7 @@ jobs:
     - name: Run clang-format
       run: |
         curl -O https://raw.githubusercontent.com/Sarcasm/run-clang-format/master/run-clang-format.py
-        python ./run-clang-format.py -r module simulator src
+        python ./run-clang-format.py -r module simulator src --style=file
   run-tests:
     runs-on: ubuntu-latest
     steps:
