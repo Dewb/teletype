@@ -5,6 +5,7 @@ ColumnLimit: 80
 ---
 Language: Cpp
 
+AllowShortIfStatementsOnASingleLine: true
 AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Empty
