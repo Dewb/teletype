@@ -21,14 +21,14 @@ typedef struct {
 static grid_data_t grid_data;
 
 // NVRAM data structure located in the flash array.
-typedef const struct {
+typedef struct {
     scene_script_t scripts[EDITABLE_SCRIPT_COUNT];
     scene_pattern_t patterns[PATTERN_COUNT];
     grid_data_t grid_data;
     char text[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
 } nvram_scene_t;
 
-typedef const struct {
+typedef struct {
     nvram_scene_t scenes[SCENE_SLOTS];
     uint8_t last_scene;
     tele_mode_t last_mode;
@@ -38,7 +38,17 @@ typedef const struct {
 } nvram_data_t;
 
 
+#ifdef TARGET
 static __attribute__((__section__(".flash_nvram"))) nvram_data_t f;
+#else
+nvram_data_t f;
+#ifdef DECLARE_NVRAM
+DECLARE_NVRAM(&f, sizeof(nvram_data_t))
+#endif
+#ifdef DECLARE_VRAM
+DECLARE_VRAM(&scene_state, sizeof(scene_state))
+#endif
+#endif
 
 static void pack_grid(scene_state_t *scene);
 static void unpack_grid(scene_state_t *scene);

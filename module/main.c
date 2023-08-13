@@ -173,10 +173,10 @@ static void handler_AppCustom(int32_t data);
 static void empty_event_handlers(void);
 void assign_main_event_handlers(void);
 static void assign_msc_event_handlers(void);
-static void check_events(void);
+void check_events(void);
 
 // key handling
-static void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key,
+void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key,
                              bool is_release);
 static bool process_global_keys(uint8_t key, uint8_t mod_key, bool is_held_key);
 
@@ -1182,7 +1182,7 @@ void reset_midi_counter() {
 ////////////////////////////////////////////////////////////////////////////////
 // main
 
-int main(void) {
+int initialize_module(void) {
     sysclk_init();
 
     init_dbg_rs232(FMCK_HZ);
@@ -1298,7 +1298,10 @@ int main(void) {
 
     run_script(&scene_state, INIT_SCRIPT);
     scene_state.initializing = false;
+}
 
+int main(void) {
+    initialize_module();
 #ifdef TELETYPE_PROFILE
     uint32_t count = 0;
 #endif
