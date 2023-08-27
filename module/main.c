@@ -189,6 +189,8 @@ static void render_init(void);
 static void exit_screensaver(void);
 static void update_device_config(u8 refresh);
 
+void initialize_module(void);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // timer callbacks
@@ -1182,7 +1184,7 @@ void reset_midi_counter() {
 ////////////////////////////////////////////////////////////////////////////////
 // main
 
-int initialize_module(void) {
+void initialize_module(void) {
     sysclk_init();
 
     init_dbg_rs232(FMCK_HZ);

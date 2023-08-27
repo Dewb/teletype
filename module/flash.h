@@ -6,10 +6,8 @@
 #include "globals.h"
 #include "line_editor.h"
 #include "teletype.h"
-#include "script.h"
 
 #define SCENE_SLOTS 32
-#define FIRSTRUN_KEY 0x22
 #define BUTTON_STATE_SIZE (GRID_BUTTON_COUNT >> 3)
 
 typedef struct
@@ -36,7 +34,6 @@ typedef struct
     cal_data_t cal;
     device_config_t device_config;
 } nvram_data_t;
-
 
 u8 is_flash_fresh(void);
 void flash_prepare(void);

@@ -11,9 +11,11 @@
 // this
 #include "teletype.h"
 
+#define FIRSTRUN_KEY 0x22
+
 static grid_data_t grid_data;
 
-#ifdef TARGET
+#if defined(__AVR32__)
 static __attribute__((__section__(".flash_nvram"))) nvram_data_t f;
 #else
 nvram_data_t f;
