@@ -6,7 +6,7 @@
 
 #include "flash.h"
 #include "globals.h"
-#include "serialize.h"
+#include "scene_serialization.h"
 
 // libavr32
 #include "font.h"

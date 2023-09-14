@@ -1,5 +1,5 @@
 #include "teletype.h"
-#include "serialize.h"
+#include "scene_serialization.h"
 #include "util.h"
 
 uint8_t grid_state = 0;

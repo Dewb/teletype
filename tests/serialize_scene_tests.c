@@ -8,7 +8,7 @@
 #include "teletype.h"
 #include "state.h"
 #include "serializer.h"
-#include "serialize.h"
+#include "scene_serialization.h"
 #include "ops\op_enum.h"
 
 void test_file_write_buffer(void* user_data, uint8_t* buffer, uint16_t size) {
