@@ -2,7 +2,7 @@
 
 #include "greatest/greatest.h"
 #include "ops/op.h"
-#include "ops/op_enum.h"
+#include "gen/op_enum.h"
 #include "teletype.h"
 
 #define CORPUS_COUNT 141
